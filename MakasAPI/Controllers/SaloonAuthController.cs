@@ -18,19 +18,19 @@ namespace MakasAPI.Controllers
     [Route("api/SaloonAuth")]
     public class SaloonAuthController : Controller
     {
-        private ISaloonAuthRepository _authRepositoy;
+        private ISaloonAuthRepository _authRepository;
         private IConfiguration _configuration;
 
         public SaloonAuthController(ISaloonAuthRepository authRepository, IConfiguration configuration)
         {
-            _authRepositoy = authRepository;
+            _authRepository = authRepository;
             _configuration = configuration;
         }
         [HttpPost("register")]
         public async Task<ActionResult> Register([FromBody] SaloonForRegisterDto userForRegisterDto)
         {
             
-            if (await _authRepositoy.UserExist(userForRegisterDto.SaloonPhone, userForRegisterDto.SaloonEmail))
+            if (await _authRepository.UserExist(userForRegisterDto.SaloonPhone, userForRegisterDto.SaloonEmail))
             {
                 ModelState.AddModelError("Email", "Email has already exist");
             }
@@ -48,14 +48,14 @@ namespace MakasAPI.Controllers
                 SaloonDistrict = userForRegisterDto.SaloonDistrict
 
             };
-            var createdUser = await _authRepositoy.Register(userToCreate, userForRegisterDto.SaloonPassword);
+            var createdUser = await _authRepository.Register(userToCreate, userForRegisterDto.SaloonPassword);
             return StatusCode(201);
         }
 
         [HttpPost("login")]
         public async Task<ActionResult> Login([FromBody] SaloonForLoginDto userForLoginDto)
         {
-            var user = await _authRepositoy.Login(userForLoginDto.SaloonPhone, userForLoginDto.SaloonPassword);
+            var user = await _authRepository.Login(userForLoginDto.SaloonPhone, userForLoginDto.SaloonPassword);
 
             if (user == null)
             {
@@ -85,7 +85,7 @@ namespace MakasAPI.Controllers
         [Route("detail")]
         public ActionResult GetSaloonById(int id)
         {
-            var saloon = _authRepositoy.GetSaloonById(id);
+            var saloon = _authRepository.GetSaloonById(id);
             return Ok(saloon);
         }
     }
