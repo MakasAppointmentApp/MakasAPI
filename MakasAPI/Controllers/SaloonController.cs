@@ -76,5 +76,49 @@ namespace MakasAPI.Controllers
             }
             return Ok(200);
         }
+        [HttpPost]
+        [Route("addworker")]
+        public ActionResult AddWorker(int id, string workerName, byte[] workerImage)
+        {
+            var saloon = _saloonRepository.AddWorker(id, workerName, workerImage);
+            if (saloon.Result == null)
+            {
+                return BadRequest();
+            }
+            return Ok(200);
+        }
+        [HttpDelete]
+        [Route("deleteworker")]
+        public ActionResult DeleteWorker(int id)
+        {
+            var worker = _saloonRepository.DeleteWorker(id);
+            if (worker.Result == null)
+            {
+                return BadRequest();
+            }
+            return Ok(200);
+        }
+        [HttpPost]
+        [Route("addprice")]
+        public ActionResult AddPrice(int id, string priceName, double priceAmount)
+        {
+            var price = _saloonRepository.AddPrice(id, priceName, priceAmount);
+            if (price.Result == null)
+            {
+                return BadRequest();
+            }
+            return Ok(200);
+        }
+        [HttpDelete]
+        [Route("deleteprice")]
+        public ActionResult DeletePrice(int id)
+        {
+            var price = _saloonRepository.DeletePrice(id);
+            if (price.Result == null)
+            {
+                return BadRequest();
+            }
+            return Ok(200);
+        }
     }
 }

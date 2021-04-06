@@ -58,6 +58,36 @@ namespace MakasAPI.Data.Repositories.Concrete
             }
             return null;
         }
+        public Worker GetWorkerBySaloonId(int saloonId, int id)
+        {
+            var worker = _context.Workers.FirstOrDefault(w => w.Id == id && w.SaloonId == saloonId);
+            if (worker != null)
+            {
+                return worker;
+
+            }
+            return null;
+        }
+        public Worker GetWorkerById(int id)
+        {
+            var worker = _context.Workers.FirstOrDefault(w => w.Id == id);
+            if (worker != null)
+            {
+                return worker;
+
+            }
+            return null;
+        }
+        public Price GetPriceById(int id)
+        {
+            var price = _context.Prices.FirstOrDefault(w => w.Id == id);
+            if (price != null)
+            {
+                return price;
+
+            }
+            return null;
+        }
         public List<Saloon> GetSaloonsByLocation(string city, string district)
         {
             var saloons = _context.Saloons.Where(s => s.SaloonCity == city && s.SaloonDistrict == district).ToList();
@@ -127,6 +157,79 @@ namespace MakasAPI.Data.Repositories.Concrete
                     await _context.SaveChangesAsync();
                     return saloon;
                 }
+            }
+            return null;
+        }
+
+        public async Task<Worker> AddWorker(int id, string workerName, byte[] workerImage)
+        {
+            if (workerImage != null)
+            {
+                var workerToCreate = new Worker
+                {
+                    SaloonId = id,
+                    WorkerName = workerName,
+                    WorkerPhoto = workerImage
+
+                };
+                _context.Add(workerToCreate);
+                await _context.SaveChangesAsync();
+                return workerToCreate;
+            }
+            else
+            {
+                var workerToCreate = new Worker
+                {
+                    SaloonId = id,
+                    WorkerName = workerName
+
+                };
+                _context.Add(workerToCreate);
+                await _context.SaveChangesAsync();
+                return workerToCreate;
+            }// return null koymak lazım
+            
+        }
+
+        public async Task<Worker> DeleteWorker(int id)
+        {
+            var worker = GetWorkerById(id);
+            if (worker != null)
+            {
+                _context.Remove(worker);
+                await _context.SaveChangesAsync();
+                return worker;
+            }
+            return null;
+        }
+
+        public async Task<Price> AddPrice(int id, string priceName, double priceAmount)
+        {
+            if (priceName !=null && priceAmount != 0)
+            {
+                var priceToCreate = new Price
+                {
+                    SaloonId = id,
+                    PriceName = priceName,
+                    PriceAmount = priceAmount
+
+                };
+                _context.Add(priceToCreate);
+                await _context.SaveChangesAsync();
+                return priceToCreate;
+            }
+            return null;
+            
+        }
+
+        public async Task<Price> DeletePrice(int id)
+        {
+            var price = GetPriceById(id);
+            if (price != null)
+            {
+                _context.Remove(price);
+                await _context.SaveChangesAsync();
+                return price;
             }
             return null;
         }

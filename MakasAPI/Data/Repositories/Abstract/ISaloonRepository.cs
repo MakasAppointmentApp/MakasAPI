@@ -7,12 +7,8 @@ using System.Threading.Tasks;
 
 namespace MakasAPI.Data.Repositories.Abstract
 {
-    public interface ISaloonRepository
+    public interface ISaloonRepository: IAppRepository
     {
-        void Add<T>(T entity) where T : class;
-        void Update<T>(T entity) where T : class;
-        void Delete<T>(T entity) where T : class;
-        bool SaveAll();
         Task<Saloon> UpdateSaloonLocation(int id, string saloonLocation);
         Task<Saloon> UpdateSaloonImage(int id, byte[] image);
         Task<Saloon> UpdateSaloonName(int id, string saloonName);
@@ -20,5 +16,13 @@ namespace MakasAPI.Data.Repositories.Abstract
         List<Saloon> GetSaloons();
         Saloon GetSaloonById(int saloonId);
         List<Saloon> GetSaloonsByLocation(string city, string district);
+        Worker GetWorkerBySaloonId(int saloonId, int id);
+        Worker GetWorkerById(int id);
+        Task<Worker> AddWorker(int id, string workerName, byte[] workerImage);
+        Task<Worker> DeleteWorker(int id);
+        Price GetPriceById(int id);
+        Task<Price> AddPrice(int id, string priceName, double priceAmount);
+        Task<Price> DeletePrice(int id);
+
     }
 }
