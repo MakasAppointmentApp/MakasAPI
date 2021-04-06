@@ -10,6 +10,6 @@ namespace MakasAPI.Models
         public int Id { get; set; }
         public int SaloonId { get; set; }
         public string PriceName { get; set; }
-        public string PriceAmount { get; set; }
+        public double PriceAmount { get; set; }
     }
 }

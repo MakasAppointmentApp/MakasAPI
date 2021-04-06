@@ -10,7 +10,7 @@ namespace MakasAPI.Models
         public int Id { get; set; }
         public int SaloonId { get; set; }
         public string WorkerName { get; set; }
-        public byte[] WorkerImage { get; set; }
+        public byte[] WorkerPhoto { get; set; }
         public double WorkerRate { get; set; }
     }
 }
