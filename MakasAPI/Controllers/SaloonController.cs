@@ -28,7 +28,7 @@ namespace MakasAPI.Controllers
             var saloon = _saloonRepository.GetSaloonById(id);
             if (saloon == null)
             {
-                return BadRequest();
+                return BadRequest("Böyle bir salon yok!");
             }
             return Ok(saloon);
         }
@@ -39,7 +39,7 @@ namespace MakasAPI.Controllers
             var saloon = _saloonRepository.UpdateSaloonLocation(id, saloonLocation);
             if (saloon.Result == null)
             {
-                return BadRequest();
+                return BadRequest("Konum değiştirilemedi, bir hata oluştu!");
             }
             return Ok(200);
         }
@@ -50,7 +50,7 @@ namespace MakasAPI.Controllers
             var saloon = _saloonRepository.UpdateSaloonImage(id, saloonImage);
             if (saloon.Result == null)
             {
-                return BadRequest();
+                return BadRequest("Fotoğraf değiştirilemedi, bir hata oluştu!");
             }
             return Ok(200);
         }
@@ -61,7 +61,7 @@ namespace MakasAPI.Controllers
             var saloon = _saloonRepository.UpdateSaloonName(id, saloonName);
             if (saloon.Result ==null)
             {
-                return BadRequest();
+                return BadRequest("Salon adı değiştirilemedi, bir hata oluştu!");
             }
             return Ok(200);
         }
@@ -72,7 +72,7 @@ namespace MakasAPI.Controllers
             var saloon = _saloonRepository.UpdatePassword(id, oldPassword, newPassword);
             if (saloon.Result == null)
             {
-                return BadRequest();
+                return BadRequest("Şifre değiştirilemedi, bir hata oluştu!");
             }
             return Ok(200);
         }
@@ -83,7 +83,7 @@ namespace MakasAPI.Controllers
             var saloon = _saloonRepository.AddWorker(id, workerName, workerImage);
             if (saloon.Result == null)
             {
-                return BadRequest();
+                return BadRequest("Çalışan eklenemedi, bir hata oluştu!");
             }
             return Ok(200);
         }
@@ -94,7 +94,7 @@ namespace MakasAPI.Controllers
             var worker = _saloonRepository.DeleteWorker(id);
             if (worker.Result == null)
             {
-                return BadRequest();
+                return BadRequest("Çalışan silinemedi, bir hata oluştu!");
             }
             return Ok(200);
         }
@@ -105,7 +105,7 @@ namespace MakasAPI.Controllers
             var price = _saloonRepository.AddPrice(id, priceName, priceAmount);
             if (price.Result == null)
             {
-                return BadRequest();
+                return BadRequest("Fiyat eklenemedi, bir hata oluştu!");
             }
             return Ok(200);
         }
@@ -116,9 +116,32 @@ namespace MakasAPI.Controllers
             var price = _saloonRepository.DeletePrice(id);
             if (price.Result == null)
             {
-                return BadRequest();
+                return BadRequest("Fiyat silinemedi, bir hata oluştu!");
             }
             return Ok(200);
+        }
+
+        [HttpGet]
+        [Route("pastappointments")]
+        public ActionResult PastAppointments(int saloonId, int workerId, DateTime date)
+        {
+            var app = _saloonRepository.GetWorkerPastAppointments(saloonId,workerId, date);
+            if (app.Count() == 0)
+            {
+                return BadRequest("Geçmiş randevu bulunamadı");
+            }
+            return Ok(app);
+        }
+        [HttpGet]
+        [Route("futureappointments")]
+        public ActionResult FutureAppointments(int saloonId, int workerId, DateTime date)
+        {
+            var app = _saloonRepository.GetWorkerFutureAppointments(saloonId, workerId, date);
+            if (app.Count() == 0)
+            {
+                return BadRequest("Gelecek randevu bulunamadı");
+            }
+            return Ok(app);
         }
     }
 }

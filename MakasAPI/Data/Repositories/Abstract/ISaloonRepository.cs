@@ -23,6 +23,9 @@ namespace MakasAPI.Data.Repositories.Abstract
         Price GetPriceById(int id);
         Task<Price> AddPrice(int id, string priceName, double priceAmount);
         Task<Price> DeletePrice(int id);
+        List<Appointment> GetWorkerPastAppointments(int saloonId, int workerId, DateTime date);
+        List<Appointment> GetWorkerFutureAppointments(int saloonId, int workerId, DateTime date);
 
+        //Burada bazıları customer için kontroller onları customer reposuna taşı bu kısımda sadece saloon kontrolleri olmalı
     }
 }

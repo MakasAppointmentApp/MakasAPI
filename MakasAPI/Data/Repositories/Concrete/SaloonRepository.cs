@@ -91,7 +91,7 @@ namespace MakasAPI.Data.Repositories.Concrete
         public List<Saloon> GetSaloonsByLocation(string city, string district)
         {
             var saloons = _context.Saloons.Where(s => s.SaloonCity == city && s.SaloonDistrict == district).ToList();
-            if (saloons !=null)
+            if (saloons != null)
             {
                 saloons.OrderBy(s => s.SaloonRate);//Bunu buradan kaldırıp farklı filterlar için sorgular yazabiliriz.
                 return saloons;
@@ -137,7 +137,7 @@ namespace MakasAPI.Data.Repositories.Concrete
                 return saloon;
             }
             return null;
-           
+
         }
 
         public async Task<Saloon> UpdatePassword(int id, string oldPassword, string newPassword)
@@ -188,7 +188,7 @@ namespace MakasAPI.Data.Repositories.Concrete
                 await _context.SaveChangesAsync();
                 return workerToCreate;
             }// return null koymak lazım
-            
+
         }
 
         public async Task<Worker> DeleteWorker(int id)
@@ -205,7 +205,7 @@ namespace MakasAPI.Data.Repositories.Concrete
 
         public async Task<Price> AddPrice(int id, string priceName, double priceAmount)
         {
-            if (priceName !=null && priceAmount != 0)
+            if (priceName != null && priceAmount != 0)
             {
                 var priceToCreate = new Price
                 {
@@ -219,7 +219,7 @@ namespace MakasAPI.Data.Repositories.Concrete
                 return priceToCreate;
             }
             return null;
-            
+
         }
 
         public async Task<Price> DeletePrice(int id)
@@ -233,5 +233,27 @@ namespace MakasAPI.Data.Repositories.Concrete
             }
             return null;
         }
+
+        public List<Appointment> GetWorkerPastAppointments(int saloonId, int workerId, DateTime date)
+        {
+            var appointments = _context.Appointments.Where(a => a.SaloonId == saloonId && a.WorkerId == workerId && a.Date < date).ToList();
+            if (appointments.Count == 0)
+            {// SAAT İLE DATE'İ BERABER TUTMAK GEREKİYOR
+                appointments.OrderBy(a => a.Date);
+                return appointments;
+            }
+            return null;
+        }
+        public List<Appointment> GetWorkerFutureAppointments(int saloonId, int workerId, DateTime date)
+        {
+            var appointments = _context.Appointments.Where(a => a.SaloonId == saloonId && a.WorkerId == workerId && a.Date > date).ToList();
+            if (appointments.Count == 0)
+            {// SAAT İLE DATE'İ BERABER TUTMAK GEREKİYOR
+                appointments.OrderBy(a => a.Date);
+                return appointments;
+            }
+            return null;
+        }
     }
 }
+
