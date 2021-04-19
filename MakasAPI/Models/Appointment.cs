@@ -12,6 +12,5 @@ namespace MakasAPI.Models
         public int SaloonId { get; set; }
         public int WorkerId { get; set; }
         public DateTime Date { get; set; }
-        public DateTime Hour { get; set; }
     }
 }
