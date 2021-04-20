@@ -22,7 +22,7 @@ namespace MakasAPI.Controllers
             _configuration = configuration;
         }
         [HttpGet]
-        [Route("detail")]
+        [Route("saloondetail")]
         public ActionResult GetSaloonById(int id)
         {
             var saloon = _saloonRepository.GetSaloonById(id);
@@ -32,50 +32,31 @@ namespace MakasAPI.Controllers
             }
             return Ok(saloon);
         }
-        [HttpPost]
-        [Route("updatelocation")]//add ve update bir arada
-        public ActionResult UpdateSaloonLocation(int id ,string saloonLocation)
+        [HttpGet]
+        [Route("workerdetail")]
+        public ActionResult GetWorkerById(int id)
         {
-            var saloon = _saloonRepository.UpdateSaloonLocation(id, saloonLocation);
-            if (saloon.Result == null)
+            var worker = _saloonRepository.GetWorkerById(id);
+            if (worker == null)
             {
-                return BadRequest("Konum değiştirilemedi, bir hata oluştu!");
+                return BadRequest("Böyle bir çalışan yok!");
             }
-            return Ok(200);
+            return Ok(worker);
         }
-        [HttpPost]
-        [Route("updateimage")]
-        public ActionResult UpdateSaloonImage(int id, byte[] saloonImage)
+        [HttpGet]
+        [Route("pricedetail")]
+        public ActionResult GetPriceById(int id)
         {
-            var saloon = _saloonRepository.UpdateSaloonImage(id, saloonImage);
-            if (saloon.Result == null)
+            var price = _saloonRepository.GetPriceById(id);
+            if (price == null)
             {
-                return BadRequest("Fotoğraf değiştirilemedi, bir hata oluştu!");
+                return BadRequest("Böyle bir fiyat yok!");
             }
-            return Ok(200);
+            return Ok(price);
         }
-        [HttpPost]
-        [Route("updatename")]
-        public ActionResult UpdateSaloonName(int id, string saloonName)
-        {
-            var saloon = _saloonRepository.UpdateSaloonName(id, saloonName);
-            if (saloon.Result ==null)
-            {
-                return BadRequest("Salon adı değiştirilemedi, bir hata oluştu!");
-            }
-            return Ok(200);
-        }
-        [HttpPost]
-        [Route("updatepassword")]
-        public ActionResult UpdateSaloonPassword(int id, string oldPassword, string newPassword)
-        {
-            var saloon = _saloonRepository.UpdatePassword(id, oldPassword, newPassword);
-            if (saloon.Result == null)
-            {
-                return BadRequest("Şifre değiştirilemedi, bir hata oluştu!");
-            }
-            return Ok(200);
-        }
+
+
+
         [HttpPost]
         [Route("addworker")]
         public ActionResult AddWorker(int id, string workerName, byte[] workerImage)
@@ -120,13 +101,56 @@ namespace MakasAPI.Controllers
             }
             return Ok(200);
         }
-
+        [HttpPost]
+        [Route("updatelocation")]//add ve update bir arada
+        public ActionResult UpdateSaloonLocation(int id, string saloonLocation)
+        {
+            var saloon = _saloonRepository.UpdateSaloonLocation(id, saloonLocation);
+            if (saloon.Result == null)
+            {
+                return BadRequest("Konum değiştirilemedi, bir hata oluştu!");
+            }
+            return Ok(200);
+        }
+        [HttpPost]
+        [Route("updateimage")]
+        public ActionResult UpdateSaloonImage(int id, byte[] saloonImage)
+        {
+            var saloon = _saloonRepository.UpdateSaloonImage(id, saloonImage);
+            if (saloon.Result == null)
+            {
+                return BadRequest("Fotoğraf değiştirilemedi, bir hata oluştu!");
+            }
+            return Ok(200);
+        }
+        [HttpPost]
+        [Route("updatename")]
+        public ActionResult UpdateSaloonName(int id, string saloonName)
+        {
+            var saloon = _saloonRepository.UpdateSaloonName(id, saloonName);
+            if (saloon.Result == null)
+            {
+                return BadRequest("Salon adı değiştirilemedi, bir hata oluştu!");
+            }
+            return Ok(200);
+        }
+        [HttpPost]
+        [Route("updatepassword")]
+        public ActionResult UpdateSaloonPassword(int id, string oldPassword, string newPassword)
+        {
+            var saloon = _saloonRepository.UpdatePassword(id, oldPassword, newPassword);
+            if (saloon.Result == null)
+            {
+                return BadRequest("Şifre değiştirilemedi, bir hata oluştu!");
+            }
+            return Ok(200);
+        }
         [HttpGet]
         [Route("pastappointments")]
         public ActionResult PastAppointments(int saloonId, int workerId, DateTime date)
         {
-            var app = _saloonRepository.GetWorkerPastAppointments(saloonId,workerId, date);
-            if (app.Count() == 0)
+            var app = _saloonRepository.GetWorkerPastAppointments(saloonId, workerId, date);
+            if (app == null)
             {
                 return BadRequest("Geçmiş randevu bulunamadı");
             }
@@ -137,11 +161,22 @@ namespace MakasAPI.Controllers
         public ActionResult FutureAppointments(int saloonId, int workerId, DateTime date)
         {
             var app = _saloonRepository.GetWorkerFutureAppointments(saloonId, workerId, date);
-            if (app.Count() == 0)
+            if (app == null)
             {
                 return BadRequest("Gelecek randevu bulunamadı");
             }
             return Ok(app);
+        }
+        [HttpGet]
+        [Route("saloonworkers")]
+        public ActionResult GetWorkersBySaloonId(int id)
+        {
+            var workers = _saloonRepository.GetWorkersBySaloonId(id);
+            if (workers == null)
+            {
+                return BadRequest("Hiç çalışan yok!");
+            }
+            return Ok(workers);
         }
     }
 }

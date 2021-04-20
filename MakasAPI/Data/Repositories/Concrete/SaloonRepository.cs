@@ -35,17 +35,7 @@ namespace MakasAPI.Data.Repositories.Concrete
         {
             return _context.SaveChanges() > 0;
         }
-        public List<Saloon> GetSaloons()
-        {
-            var saloons = _context.Saloons.ToList();
-            if (saloons != null)
-            {
-                saloons.OrderBy(s => s.SaloonRate);
-                saloons.Reverse();
-                return saloons;
-            }
-            return null;
-        }
+
 
         public Saloon GetSaloonById(int saloonId)
         {
@@ -58,16 +48,7 @@ namespace MakasAPI.Data.Repositories.Concrete
             }
             return null;
         }
-        public Worker GetWorkerBySaloonId(int saloonId, int id)
-        {
-            var worker = _context.Workers.FirstOrDefault(w => w.Id == id && w.SaloonId == saloonId);
-            if (worker != null)
-            {
-                return worker;
 
-            }
-            return null;
-        }
         public Worker GetWorkerById(int id)
         {
             var worker = _context.Workers.FirstOrDefault(w => w.Id == id);
@@ -85,78 +66,6 @@ namespace MakasAPI.Data.Repositories.Concrete
             {
                 return price;
 
-            }
-            return null;
-        }
-        public List<Saloon> GetSaloonsByLocation(string city, string district)
-        {
-            var saloons = _context.Saloons.Where(s => s.SaloonCity == city && s.SaloonDistrict == district).ToList();
-            if (saloons != null)
-            {
-                saloons.OrderBy(s => s.SaloonRate);//Bunu buradan kaldırıp farklı filterlar için sorgular yazabiliriz.
-                return saloons;
-            }
-            return null;
-
-        }
-
-        public async Task<Saloon> UpdateSaloonLocation(int id, string saloonLocation)
-        {
-            var saloon = GetSaloonById(id);
-            if (saloon != null)
-            {
-                saloon.SaloonLocation = saloonLocation;
-                _context.Saloons.Update(saloon);
-                await _context.SaveChangesAsync();
-                return saloon;
-            }
-            return null;
-        }
-
-        public async Task<Saloon> UpdateSaloonImage(int id, byte[] image)
-        {
-            var saloon = GetSaloonById(id);
-            if (saloon != null)
-            {
-                saloon.SaloonImage = image;
-                _context.Saloons.Update(saloon);
-                await _context.SaveChangesAsync();
-                return saloon;
-            }
-            return null;
-        }
-
-        public async Task<Saloon> UpdateSaloonName(int id, string saloonName)
-        {
-            var saloon = GetSaloonById(id);
-            if (saloon != null)
-            {
-                saloon.SaloonName = saloonName;
-                _context.Saloons.Update(saloon);
-                await _context.SaveChangesAsync();
-                return saloon;
-            }
-            return null;
-
-        }
-
-        public async Task<Saloon> UpdatePassword(int id, string oldPassword, string newPassword)
-        {
-            var saloon = GetSaloonById(id);
-            CryptographyExtension cryptography = new CryptographyExtension();
-            if (cryptography.VerifyPasswordHash(oldPassword, saloon.SaloonPasswordHash, saloon.SaloonPasswordSalt))
-            {
-                //if burada girilen şifre eski şifre ile aynı mı diye kontrol ediyor
-                if (!cryptography.VerifyPasswordHash(newPassword, saloon.SaloonPasswordHash, saloon.SaloonPasswordSalt))
-                {
-                    byte[] passwordHash, passwordSalt;
-                    cryptography.CreatePasswordHash(newPassword, out passwordHash, out passwordSalt);
-                    saloon.SaloonPasswordHash = passwordHash;
-                    saloon.SaloonPasswordSalt = passwordSalt;
-                    _context.Saloons.Update(saloon);
-                    await _context.SaveChangesAsync();
-                    return saloon;
-                }
             }
             return null;
         }
@@ -233,12 +142,72 @@ namespace MakasAPI.Data.Repositories.Concrete
             }
             return null;
         }
+        public async Task<Saloon> UpdateSaloonName(int id, string saloonName)
+        {
+            var saloon = GetSaloonById(id);
+            if (saloon != null)
+            {
+                saloon.SaloonName = saloonName;
+                _context.Saloons.Update(saloon);
+                await _context.SaveChangesAsync();
+                return saloon;
+            }
+            return null;
+
+        }
+
+        public async Task<Saloon> UpdatePassword(int id, string oldPassword, string newPassword)
+        {
+            var saloon = GetSaloonById(id);
+            CryptographyExtension cryptography = new CryptographyExtension();
+            if (cryptography.VerifyPasswordHash(oldPassword, saloon.SaloonPasswordHash, saloon.SaloonPasswordSalt))
+            {
+                //if burada girilen şifre eski şifre ile aynı mı diye kontrol ediyor
+                if (!cryptography.VerifyPasswordHash(newPassword, saloon.SaloonPasswordHash, saloon.SaloonPasswordSalt))
+                {
+                    byte[] passwordHash, passwordSalt;
+                    cryptography.CreatePasswordHash(newPassword, out passwordHash, out passwordSalt);
+                    saloon.SaloonPasswordHash = passwordHash;
+                    saloon.SaloonPasswordSalt = passwordSalt;
+                    _context.Saloons.Update(saloon);
+                    await _context.SaveChangesAsync();
+                    return saloon;
+                }
+            }
+            return null;
+        }
+        public async Task<Saloon> UpdateSaloonLocation(int id, string saloonLocation)
+        {
+            var saloon = GetSaloonById(id);
+            if (saloon != null)
+            {
+                saloon.SaloonLocation = saloonLocation;
+                _context.Saloons.Update(saloon);
+                await _context.SaveChangesAsync();
+                return saloon;
+            }
+            return null;
+        }
+
+        public async Task<Saloon> UpdateSaloonImage(int id, byte[] image)
+        {
+            var saloon = GetSaloonById(id);
+            if (saloon != null)
+            {
+                saloon.SaloonImage = image;
+                _context.Saloons.Update(saloon);
+                await _context.SaveChangesAsync();
+                return saloon;
+            }
+            return null;
+        }
+
 
         public List<Appointment> GetWorkerPastAppointments(int saloonId, int workerId, DateTime date)
         {
             var appointments = _context.Appointments.Where(a => a.SaloonId == saloonId && a.WorkerId == workerId && a.Date < date).ToList();
-            if (appointments.Count == 0)
-            {// SAAT İLE DATE'İ BERABER TUTMAK GEREKİYOR
+            if (appointments.Count != 0)
+            {
                 appointments.OrderBy(a => a.Date);
                 return appointments;
             }
@@ -247,10 +216,20 @@ namespace MakasAPI.Data.Repositories.Concrete
         public List<Appointment> GetWorkerFutureAppointments(int saloonId, int workerId, DateTime date)
         {
             var appointments = _context.Appointments.Where(a => a.SaloonId == saloonId && a.WorkerId == workerId && a.Date > date).ToList();
-            if (appointments.Count == 0)
-            {// SAAT İLE DATE'İ BERABER TUTMAK GEREKİYOR
+            if (appointments.Count != 0)
+            {
                 appointments.OrderBy(a => a.Date);
                 return appointments;
+            }
+            return null;
+        }
+        public List<Worker> GetWorkersBySaloonId(int saloonId)
+        {
+            var workers = _context.Workers.Where(w => w.SaloonId == saloonId).ToList();
+            if (workers.Count() != 0)
+            {
+                return workers;
+
             }
             return null;
         }
