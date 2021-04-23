@@ -49,6 +49,7 @@ namespace MakasAPI
             services.AddCors();
             services.AddControllers();
             services.AddScoped<ISaloonRepository, SaloonRepository>();//Buraya her repo için bu eklemeyi yapmayý unutma!
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
             services.AddScoped<ICustomerAuthRepository, CustomerAuthRepository>();
             services.AddScoped<ISaloonAuthRepository, SaloonAuthRepository>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>

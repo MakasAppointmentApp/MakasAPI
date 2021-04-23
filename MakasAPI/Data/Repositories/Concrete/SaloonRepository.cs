@@ -2,6 +2,7 @@
 using MakasAPI.Dtos.DtosForSaloon;
 using MakasAPI.Helpers;
 using MakasAPI.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
