@@ -54,5 +54,95 @@ namespace MakasAPI.Controllers
             }
             return Ok(saloon);
         }
+
+        [HttpGet]
+        [Route("workersinsaloon")]
+        public ActionResult GetWorkersBySaloon(int saloonId)
+        {
+            var workers = _customerRepository.GetWorkersBySaloon(saloonId);
+            if (workers == null)
+            {
+                return BadRequest("Bu salonda hiç worker yok!");
+            }
+            return Ok(workers);
+        }
+
+        [HttpPost]
+        [Route("addappointment")]
+        public ActionResult AddAppointment(int customerId, int saloonId, int workerId, DateTime dateT)
+        {
+            var appointment = _customerRepository.AddAppointment(customerId, saloonId, workerId, dateT);
+            if (appointment.Result == null)
+            {
+                return BadRequest("Randevu alınamadı, bir hata oluştu!");
+            }
+            return Ok(200);
+        }
+        [HttpGet]
+        [Route("customerappointments")]
+        public ActionResult GetAppointmentsById(int customerId)
+        {
+            var appointments = _customerRepository.GetAppointmentsById(customerId);
+            if (appointments == null)
+            {
+                return BadRequest("Müşterinin hiç randevusu yok!");
+            }
+            return Ok(appointments);
+        }
+        [HttpPost]
+        [Route("addreview")]
+        public ActionResult AddReview(int customerId, int saloonId, int workerId, int appointmentId, double rate, string comment)
+        {
+            var review = _customerRepository.AddReview(customerId, saloonId, workerId, appointmentId, rate, comment);
+            if (review.Result == null)
+            {
+                return BadRequest("Değerlendirme yapılamadı, bir hata oluştu!");
+            }
+            return Ok(200);
+        }
+        [HttpGet]
+        [Route("saloonreviews")]
+        public ActionResult GetReviewsBySaloon(int saloonId)
+        {
+            var reviews = _customerRepository.GetReviewsBySaloon(saloonId);
+            if (reviews == null)
+            {
+                return BadRequest("Kuaförün hiç değerlendirmesi yok!");
+            }
+            return Ok(reviews);
+        }
+        [HttpPost]
+        [Route("addfavorite")]
+        public ActionResult AddFavorite(int customerId, int saloonId)
+        {
+            var favorite = _customerRepository.AddFavorite(customerId, saloonId);
+            if (favorite.Result == null)
+            {
+                return BadRequest("Favorilere eklenemedi, bir hata oluştu!");
+            }
+            return Ok(200);
+        }
+        [HttpDelete]
+        [Route("unfavorite")]
+        public ActionResult UnFavorite(int id)
+        {
+            var favorite = _customerRepository.UnFavorite(id);
+            if (favorite.Result == null)
+            {
+                return BadRequest("Favorilerden çıkarılamadı, bir hata oluştu!");
+            }
+            return Ok(200);
+        }
+        [HttpGet]
+        [Route("customerfavorites")]
+        public ActionResult GetFavoritesByCustomer(int customerId)
+        {
+            var favorites = _customerRepository.GetFavoritesByCustomer(customerId);
+            if (favorites == null)
+            {
+                return BadRequest("Müşterinin hiç favorisi yok!");
+            }
+            return Ok(favorites);
+        }
     }
 }
