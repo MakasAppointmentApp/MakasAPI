@@ -37,7 +37,7 @@ namespace MakasAPI.Data.Repositories.Concrete
             return _context.SaveChanges() > 0;
         }
 
-
+        
         public Saloon GetSaloonById(int saloonId)
         {
             //Entity Frameworkten FindAsync ya da FirstOrDefaultAsync kullanmak daha iyi olabilir mi?
@@ -113,13 +113,13 @@ namespace MakasAPI.Data.Repositories.Concrete
             return null;
         }
 
-        public async Task<Price> AddPrice(int id, string priceName, double priceAmount)
+        public async Task<Price> AddPrice(int saloonId, string priceName, double priceAmount)
         {
             if (priceName != null && priceAmount != 0)
             {
                 var priceToCreate = new Price
                 {
-                    SaloonId = id,
+                    SaloonId = saloonId,
                     PriceName = priceName,
                     PriceAmount = priceAmount
 
@@ -203,20 +203,32 @@ namespace MakasAPI.Data.Repositories.Concrete
             return null;
         }
 
-
-        public List<Appointment> GetWorkerPastAppointments(int saloonId, int workerId, DateTime date)
+        public List<WorkerAppointmentDto> GetWorkerPastAppointments(int workerId, DateTime date)
         {
-            var appointments = _context.Appointments.Where(a => a.SaloonId == saloonId && a.WorkerId == workerId && a.Date < date).ToList();
+            var appointments = _context.Appointments.Where(a => a.Date < date).Join(_context.Customers, a => a.CustomerId, c => c.Id,
+                (a, c) => new WorkerAppointmentDto
+                {
+                    Id = a.Id,
+                    Date = a.Date,
+                    CustomerFullName = c.CustomerName +" "+ c.CustomerSurname 
+                }).ToList();
             if (appointments.Count != 0)
             {
                 appointments.OrderBy(a => a.Date);
+                appointments.Reverse();
                 return appointments;
             }
             return null;
         }
-        public List<Appointment> GetWorkerFutureAppointments(int saloonId, int workerId, DateTime date)
+        public List<WorkerAppointmentDto> GetWorkerFutureAppointments(int workerId, DateTime date)
         {
-            var appointments = _context.Appointments.Where(a => a.SaloonId == saloonId && a.WorkerId == workerId && a.Date > date).ToList();
+            var appointments = _context.Appointments.Where(a => a.Date > date).Join(_context.Customers, a => a.CustomerId, c => c.Id,
+                (a, c) => new WorkerAppointmentDto
+                {
+                    Id = a.Id,
+                    Date = a.Date,
+                    CustomerFullName = c.CustomerName + " " + c.CustomerSurname
+                }).ToList();
             if (appointments.Count != 0)
             {
                 appointments.OrderBy(a => a.Date);

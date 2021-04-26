@@ -15,6 +15,7 @@ namespace MakasAPI.Models
         public double Rate { get; set; }
         public string Comment { get; set; }
 
+        public DateTime Date { get; set; }
         public Customer Customer { get; set; }
         public Saloon Saloon { get; set; }
         public Worker Worker { get; set; }

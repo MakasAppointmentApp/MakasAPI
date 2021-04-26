@@ -33,9 +33,9 @@ namespace MakasAPI.Controllers
         }
         [HttpGet]
         [Route("locationsaloons")]
-        public ActionResult GetSaloonsByLocation(string city, string district)
+        public ActionResult GetSaloonsByLocation(string city, string district, bool gender)
         {
-            var saloons = _customerRepository.GetSaloonsByLocation(city,district);
+            var saloons = _customerRepository.GetSaloonsByLocation(city,district,gender);
             if (saloons == null)
             {
                 return BadRequest("Bu konumda hiç salon yok!");
