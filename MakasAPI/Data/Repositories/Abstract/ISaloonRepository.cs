@@ -18,11 +18,12 @@ namespace MakasAPI.Data.Repositories.Abstract
         Task<Worker> AddWorker(int id, string workerName, byte[] workerImage);
         Task<Worker> DeleteWorker(int id);
         Price GetPriceById(int id);
-        Task<Price> AddPrice(int id, string priceName, double priceAmount);
+        Task<Price> AddPrice(int saloonId, string priceName, double priceAmount);
         Task<Price> DeletePrice(int id);
-        List<Appointment> GetWorkerPastAppointments(int saloonId, int workerId, DateTime date);
-        List<Appointment> GetWorkerFutureAppointments(int saloonId, int workerId, DateTime date);
+        List<WorkerAppointmentDto> GetWorkerPastAppointments(int workerId, DateTime date);
+        List<WorkerAppointmentDto> GetWorkerFutureAppointments(int workerId, DateTime date);
         List<Worker> GetWorkersBySaloonId(int saloonId);
 
+        //İHTİYACA GÖRE YENİ SORGULAR YAZILABİLİR
     }
 }

@@ -147,9 +147,9 @@ namespace MakasAPI.Controllers
         }
         [HttpGet]
         [Route("pastappointments")]
-        public ActionResult PastAppointments(int saloonId, int workerId, DateTime date)
+        public ActionResult PastAppointments(int workerId, DateTime date)
         {
-            var app = _saloonRepository.GetWorkerPastAppointments(saloonId, workerId, date);
+            var app = _saloonRepository.GetWorkerPastAppointments(workerId, date);
             if (app == null)
             {
                 return BadRequest("Geçmiş randevu bulunamadı");
@@ -158,9 +158,9 @@ namespace MakasAPI.Controllers
         }
         [HttpGet]
         [Route("futureappointments")]
-        public ActionResult FutureAppointments(int saloonId, int workerId, DateTime date)
+        public ActionResult FutureAppointments(int workerId, DateTime date)
         {
-            var app = _saloonRepository.GetWorkerFutureAppointments(saloonId, workerId, date);
+            var app = _saloonRepository.GetWorkerFutureAppointments(workerId, date);
             if (app == null)
             {
                 return BadRequest("Gelecek randevu bulunamadı");

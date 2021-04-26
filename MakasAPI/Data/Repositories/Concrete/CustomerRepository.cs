@@ -1,5 +1,7 @@
 ﻿using MakasAPI.Data.Repositories.Abstract;
+using MakasAPI.Dtos.DtosForSaloon;
 using MakasAPI.Models;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,21 +60,40 @@ namespace MakasAPI.Data.Repositories.Concrete
             return null;
         }
 
-        public List<Saloon> GetSaloonsByLocation(string city, string district)
+        public List<SaloonsByLocationDto> GetSaloonsByLocation(string city, string district, bool gender)
         {
-            var saloons = _context.Saloons.Where(s => s.SaloonCity == city && s.SaloonDistrict == district).ToList();
+            // Bu tamam sıralama için bakılabilir!?
+            var saloons = _context.Saloons.Where(s => s.SaloonCity == city && s.SaloonDistrict == district && gender == s.SaloonGender).Include( c=> c.Workers).Select(
+            s => new SaloonsByLocationDto
+            {
+                Id = s.Id,
+                SaloonName = s.SaloonName,
+                SaloonRate = s.SaloonRate,
+                SaloonImage = s.SaloonImage,
+                WorkerCount = s.Workers.Count()
+            }
+            ).ToList();
             if (saloons != null)
             {
-                saloons.OrderBy(s => s.SaloonRate);//Bunu buradan kaldırıp farklı filterlar için sorgular yazabiliriz.
+                saloons.OrderBy(s => s.SaloonRate);
                 return saloons;
             }
             return null;
 
         }
 
-        public List<Worker> GetWorkersBySaloon(int saloonId)
+        public List<WorkersBySaloonDto> GetWorkersBySaloon(int saloonId)
         {
-            var workers = _context.Workers.Where(s => s.SaloonId == saloonId).ToList();
+            // Bu Tamam!
+            var workers = _context.Workers.Where(s => s.SaloonId == saloonId).Select(
+                w => new WorkersBySaloonDto
+                {
+                    Id = w.Id,
+                    WorkerName = w.WorkerName,
+                    WorkerPhoto = w.WorkerPhoto,
+                    WorkerRate = w.WorkerRate,
+                }
+                ).ToList();
             if (workers != null)
             {
                 workers.OrderBy(s => s.WorkerRate);//worker rate ine göre listview e sıralanmış gönderim.
@@ -100,9 +121,18 @@ namespace MakasAPI.Data.Repositories.Concrete
             return null;
         }
 
-        public List<Appointment> GetAppointmentsById(int customerId)
+        public List<AppointmentsWithSaloon> GetAppointmentsById(int customerId)
         {
-            var appointments = _context.Appointments.Where(s => s.CustomerId == customerId).ToList();
+            //BU DA TAMAM!
+            var appointments = _context.Appointments.Where(s => s.CustomerId == customerId).Join(_context.Saloons, a => a.SaloonId, s => s.Id,
+
+                (a, s) => new AppointmentsWithSaloon
+                {
+                    Id = a.Id,
+                    SaloonName = s.SaloonName,
+                    SaloonRate = s.SaloonRate,
+                    Date = a.Date
+                }).ToList();
             if (appointments != null)
             {
                 appointments.Sort((x, y) => y.Date.CompareTo(x.Date));  //tarihi tersten sıralama fonksiyonu.
@@ -110,7 +140,7 @@ namespace MakasAPI.Data.Repositories.Concrete
             }
             return null;
         }
-
+   
         public async Task<Review> AddReview(int customerId, int saloonId, int workerId, int appointmentId, double rate, string comment)
         {
             if (rate != 0 && comment != null)
@@ -122,7 +152,8 @@ namespace MakasAPI.Data.Repositories.Concrete
                     WorkerId = workerId,
                     AppointmentId = appointmentId,
                     Rate = rate,
-                    Comment = comment
+                    Comment = comment,
+                    Date = DateTime.Now
 
                 };
                 _context.Add(reviewToCreate);
@@ -131,10 +162,20 @@ namespace MakasAPI.Data.Repositories.Concrete
             }
             return null;
         }
-
-        public List<Review> GetReviewsBySaloon(int saloonId)
+       
+        public List<ReviewsBySaloon> GetReviewsBySaloon(int saloonId)
         {
-            var reviews = _context.Reviews.Where(s => s.SaloonId == saloonId).ToList();
+            // BU DA TAMAM ANCAK YORUMUN YAZILDIĞI DATE İ DATETIME NOW DAN ÇIKARIP INT OLARAKTA TUTULABİLİR
+              var reviews = _context.Reviews.Where(s => s.SaloonId == saloonId).Join(_context.Customers, r => r.CustomerId, c => c.Id,
+                (r, c) => new ReviewsBySaloon
+                {
+                    Id = r.Id,
+                    Comment = r.Comment,
+                    Rate = r.Rate,
+                    Date = r.Date,
+                    CustomerName = c.CustomerName + " " + c.CustomerSurname
+                }
+                ).ToList();
             if (reviews != null)
             {
                 reviews.Reverse();
@@ -169,10 +210,17 @@ namespace MakasAPI.Data.Repositories.Concrete
             }
             return null;
         }
-
-        public List<Favorite> GetFavoritesByCustomer(int customerId)
+        public List<FavoriteByCustomerDto> GetFavoritesByCustomer(int customerId)
         {
-            var favorites = _context.Favorites.Where(s => s.CustomerId == customerId).ToList();
+            //BU TAMAM!!
+            var favorites = _context.Favorites.Where(f => f.CustomerId == customerId).Join(_context.Saloons, f => f.SaloonId, s => s.Id,
+                (f, s) => new FavoriteByCustomerDto
+                {
+                    Id = f.Id,
+                    SaloonName = s.SaloonName,
+                    SaloonImage = s.SaloonImage,
+                    SaloonRate = s.SaloonRate
+                }).ToList();
             if (favorites != null)
             {
                 favorites.Reverse();  //En son eklenen başta duracak şekilde.
