@@ -48,6 +48,7 @@ namespace MakasAPI.Data.Repositories.Concrete
 
             }
             return null;
+
         }
 
         public Worker GetWorkerById(int id)
@@ -203,9 +204,9 @@ namespace MakasAPI.Data.Repositories.Concrete
             return null;
         }
 
-        public List<WorkerAppointmentDto> GetWorkerPastAppointments(int workerId, DateTime date)
+        public List<WorkerAppointmentDto> GetWorkerPastAppointments(int workerId)
         {
-            var appointments = _context.Appointments.Where(a => a.Date < date).Join(_context.Customers, a => a.CustomerId, c => c.Id,
+            var appointments = _context.Appointments.Where(a => a.Date < DateTime.Now && a.WorkerId == workerId).Join(_context.Customers, a => a.CustomerId, c => c.Id,
                 (a, c) => new WorkerAppointmentDto
                 {
                     Id = a.Id,
@@ -220,9 +221,9 @@ namespace MakasAPI.Data.Repositories.Concrete
             }
             return null;
         }
-        public List<WorkerAppointmentDto> GetWorkerFutureAppointments(int workerId, DateTime date)
+        public List<WorkerAppointmentDto> GetWorkerFutureAppointments(int workerId)
         {
-            var appointments = _context.Appointments.Where(a => a.Date > date).Join(_context.Customers, a => a.CustomerId, c => c.Id,
+            var appointments = _context.Appointments.Where(a => a.Date > DateTime.Now && a.WorkerId == workerId).Join(_context.Customers, a => a.CustomerId, c => c.Id,
                 (a, c) => new WorkerAppointmentDto
                 {
                     Id = a.Id,

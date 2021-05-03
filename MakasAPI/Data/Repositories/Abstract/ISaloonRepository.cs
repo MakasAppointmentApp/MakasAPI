@@ -20,8 +20,8 @@ namespace MakasAPI.Data.Repositories.Abstract
         Price GetPriceById(int id);
         Task<Price> AddPrice(int saloonId, string priceName, double priceAmount);
         Task<Price> DeletePrice(int id);
-        List<WorkerAppointmentDto> GetWorkerPastAppointments(int workerId, DateTime date);
-        List<WorkerAppointmentDto> GetWorkerFutureAppointments(int workerId, DateTime date);
+        List<WorkerAppointmentDto> GetWorkerPastAppointments(int workerId);
+        List<WorkerAppointmentDto> GetWorkerFutureAppointments(int workerId);
         List<Worker> GetWorkersBySaloonId(int saloonId);
 
         //İHTİYACA GÖRE YENİ SORGULAR YAZILABİLİR
