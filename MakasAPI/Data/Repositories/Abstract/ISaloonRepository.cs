@@ -1,4 +1,5 @@
 ﻿using MakasAPI.Dtos.DtosForSaloon;
+using MakasAPI.Dtos.DtosForUsers;
 using MakasAPI.Models;
 using System;
 using System.Collections.Generic;
@@ -9,21 +10,23 @@ namespace MakasAPI.Data.Repositories.Abstract
 {
     public interface ISaloonRepository : IAppRepository
     {
-        Task<Saloon> UpdateSaloonLocation(int id, string saloonLocation);
-        Task<Saloon> UpdateSaloonImage(int id, byte[] image);
-        Task<Saloon> UpdateSaloonName(int id, string saloonName);
-        Task<Saloon> UpdatePassword(int id, string oldPassword, string newPassword);
+        Task<Saloon> UpdateSaloonLocation(UpdateSaloonLocation saloonObj);
+        Task<Saloon> UpdateSaloonImage(UpdateSaloonImageDto saloon);
+        Task<Saloon> UpdateSaloonName(UpdateSaloonNameDto saloonObj);
+        Task<Saloon> UpdatePassword(UpdatePasswordDto updatePassword);
         Saloon GetSaloonById(int saloonId);
         Worker GetWorkerById(int id);
-        Task<Worker> AddWorker(int id, string workerName, byte[] workerImage);
+        Task<Worker> AddWorker(AddWorkerDto worker);
         Task<Worker> DeleteWorker(int id);
         Price GetPriceById(int id);
-        Task<Price> AddPrice(int saloonId, string priceName, double priceAmount);
+        Task<Price> AddPrice(AddPriceDto price);
         Task<Price> DeletePrice(int id);
         List<WorkerAppointmentDto> GetWorkerPastAppointments(int workerId);
         List<WorkerAppointmentDto> GetWorkerFutureAppointments(int workerId);
+        List<Appointment> GetWorkerAppointments(int workerId);
         List<Worker> GetWorkersBySaloonId(int saloonId);
 
+        List<Price> GetPricesBySaloonId(int saloonId);
         //İHTİYACA GÖRE YENİ SORGULAR YAZILABİLİR
     }
 }
