@@ -1,5 +1,6 @@
 ﻿using MakasAPI.Data.Repositories.Abstract;
 using MakasAPI.Dtos.DtosForSaloon;
+using MakasAPI.Dtos.DtosForUsers;
 using MakasAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -59,9 +60,9 @@ namespace MakasAPI.Controllers
 
         [HttpPost]
         [Route("addworker")]
-        public ActionResult AddWorker(int id, string workerName, byte[] workerImage)
+        public ActionResult AddWorker([FromBody]AddWorkerDto worker)
         {
-            var saloon = _saloonRepository.AddWorker(id, workerName, workerImage);
+            var saloon = _saloonRepository.AddWorker(worker);
             if (saloon.Result == null)
             {
                 return BadRequest("Çalışan eklenemedi, bir hata oluştu!");
@@ -70,7 +71,7 @@ namespace MakasAPI.Controllers
         }
         [HttpDelete]
         [Route("deleteworker")]
-        public ActionResult DeleteWorker(int id)
+        public ActionResult DeleteWorker(int id)//BU DEĞİŞECEK!!!!!
         {
             var worker = _saloonRepository.DeleteWorker(id);
             if (worker.Result == null)
@@ -81,10 +82,10 @@ namespace MakasAPI.Controllers
         }
         [HttpPost]
         [Route("addprice")]
-        public ActionResult AddPrice(int id, string priceName, double priceAmount)
+        public ActionResult AddPrice([FromBody]AddPriceDto price)
         {
-            var price = _saloonRepository.AddPrice(id, priceName, priceAmount);
-            if (price.Result == null)
+            var result = _saloonRepository.AddPrice(price);
+            if (result.Result == null)
             {
                 return BadRequest("Fiyat eklenemedi, bir hata oluştu!");
             }
@@ -103,9 +104,9 @@ namespace MakasAPI.Controllers
         }
         [HttpPost]
         [Route("updatelocation")]//add ve update bir arada
-        public ActionResult UpdateSaloonLocation(int id, string saloonLocation)
+        public ActionResult UpdateSaloonLocation([FromBody]UpdateSaloonLocation saloonObj)
         {
-            var saloon = _saloonRepository.UpdateSaloonLocation(id, saloonLocation);
+            var saloon = _saloonRepository.UpdateSaloonLocation(saloonObj);
             if (saloon.Result == null)
             {
                 return BadRequest("Konum değiştirilemedi, bir hata oluştu!");
@@ -114,10 +115,10 @@ namespace MakasAPI.Controllers
         }
         [HttpPost]
         [Route("updateimage")]
-        public ActionResult UpdateSaloonImage(int id, byte[] saloonImage)
+        public ActionResult UpdateSaloonImage([FromBody] UpdateSaloonImageDto saloon)
         {
-            var saloon = _saloonRepository.UpdateSaloonImage(id, saloonImage);
-            if (saloon.Result == null)
+            var result = _saloonRepository.UpdateSaloonImage(saloon);
+            if (result.Result == null)
             {
                 return BadRequest("Fotoğraf değiştirilemedi, bir hata oluştu!");
             }
@@ -125,9 +126,9 @@ namespace MakasAPI.Controllers
         }
         [HttpPost]
         [Route("updatename")]
-        public ActionResult UpdateSaloonName(int id, string saloonName)
+        public ActionResult UpdateSaloonName([FromBody]UpdateSaloonNameDto saloonObj)
         {
-            var saloon = _saloonRepository.UpdateSaloonName(id, saloonName);
+            var saloon = _saloonRepository.UpdateSaloonName(saloonObj);
             if (saloon.Result == null)
             {
                 return BadRequest("Salon adı değiştirilemedi, bir hata oluştu!");
@@ -136,9 +137,9 @@ namespace MakasAPI.Controllers
         }
         [HttpPost]
         [Route("updatepassword")]
-        public ActionResult UpdateSaloonPassword(int id, string oldPassword, string newPassword)
+        public ActionResult UpdateSaloonPassword([FromBody]UpdatePasswordDto updatePassword)
         {
-            var saloon = _saloonRepository.UpdatePassword(id, oldPassword, newPassword);
+            var saloon = _saloonRepository.UpdatePassword(updatePassword);
             if (saloon.Result == null)
             {
                 return BadRequest("Şifre değiştirilemedi, bir hata oluştu!");
@@ -177,6 +178,17 @@ namespace MakasAPI.Controllers
                 return BadRequest("Hiç çalışan yok!");
             }
             return Ok(workers);
+        }
+        [HttpGet]
+        [Route("saloonprices")]
+        public ActionResult GetPricesBySaloonId(int id)
+        {
+            var prices = _saloonRepository.GetPricesBySaloonId(id);
+            if (prices == null)
+            {
+                return BadRequest("Hiç fiyat bilgisi yok!");
+            }
+            return Ok(prices);
         }
     }
 }

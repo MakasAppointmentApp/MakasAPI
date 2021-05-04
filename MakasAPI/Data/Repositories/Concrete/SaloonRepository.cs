@@ -1,5 +1,6 @@
 ﻿using MakasAPI.Data.Repositories.Abstract;
 using MakasAPI.Dtos.DtosForSaloon;
+using MakasAPI.Dtos.DtosForUsers;
 using MakasAPI.Helpers;
 using MakasAPI.Models;
 using Microsoft.EntityFrameworkCore;
@@ -72,15 +73,15 @@ namespace MakasAPI.Data.Repositories.Concrete
             return null;
         }
 
-        public async Task<Worker> AddWorker(int id, string workerName, byte[] workerImage)
+        public async Task<Worker> AddWorker(AddWorkerDto worker)
         {
-            if (workerImage != null)
+            if (worker.WorkerPhoto != null)
             {
                 var workerToCreate = new Worker
                 {
-                    SaloonId = id,
-                    WorkerName = workerName,
-                    WorkerPhoto = workerImage
+                    SaloonId = worker.SaloonId,
+                    WorkerName = worker.WorkerName,
+                    WorkerPhoto = worker.WorkerPhoto
 
                 };
                 _context.Add(workerToCreate);
@@ -91,8 +92,8 @@ namespace MakasAPI.Data.Repositories.Concrete
             {
                 var workerToCreate = new Worker
                 {
-                    SaloonId = id,
-                    WorkerName = workerName
+                    SaloonId = worker.SaloonId,
+                    WorkerName = worker.WorkerName
 
                 };
                 _context.Add(workerToCreate);
@@ -105,24 +106,35 @@ namespace MakasAPI.Data.Repositories.Concrete
         public async Task<Worker> DeleteWorker(int id)
         {
             var worker = GetWorkerById(id);
+            var workerAppointments = GetWorkerAppointments(id);
+            foreach (var appointment in workerAppointments)
+            {
+                _context.Appointments.Remove(appointment);
+            }
             if (worker != null)
             {
-                _context.Remove(worker);
+
+                _context.Workers.Remove(worker);
                 await _context.SaveChangesAsync();
                 return worker;
             }
             return null;
         }
-
-        public async Task<Price> AddPrice(int saloonId, string priceName, double priceAmount)
+        public List<Appointment> GetWorkerAppointments(int workerId)
         {
-            if (priceName != null && priceAmount != 0)
+            var appointments = _context.Appointments.Where(a => a.WorkerId == workerId).ToList();
+            return appointments;
+        }
+
+        public async Task<Price> AddPrice(AddPriceDto price)
+        {
+            if (price.PriceName != null && price.PriceAmount != 0)
             {
                 var priceToCreate = new Price
                 {
-                    SaloonId = saloonId,
-                    PriceName = priceName,
-                    PriceAmount = priceAmount
+                    SaloonId = price.SaloonId,
+                    PriceName = price.PriceName,
+                    PriceAmount = price.PriceAmount
 
                 };
                 _context.Add(priceToCreate);
@@ -144,12 +156,12 @@ namespace MakasAPI.Data.Repositories.Concrete
             }
             return null;
         }
-        public async Task<Saloon> UpdateSaloonName(int id, string saloonName)
+        public async Task<Saloon> UpdateSaloonName(UpdateSaloonNameDto saloonObj)
         {
-            var saloon = GetSaloonById(id);
+            var saloon = GetSaloonById(saloonObj.Id);
             if (saloon != null)
             {
-                saloon.SaloonName = saloonName;
+                saloon.SaloonName = saloonObj.SaloonName;
                 _context.Saloons.Update(saloon);
                 await _context.SaveChangesAsync();
                 return saloon;
@@ -158,17 +170,17 @@ namespace MakasAPI.Data.Repositories.Concrete
 
         }
 
-        public async Task<Saloon> UpdatePassword(int id, string oldPassword, string newPassword)
+        public async Task<Saloon> UpdatePassword(UpdatePasswordDto updatePassword)
         {
-            var saloon = GetSaloonById(id);
+            var saloon = GetSaloonById(updatePassword.Id);
             CryptographyExtension cryptography = new CryptographyExtension();
-            if (cryptography.VerifyPasswordHash(oldPassword, saloon.SaloonPasswordHash, saloon.SaloonPasswordSalt))
+            if (cryptography.VerifyPasswordHash(updatePassword.OldPassword, saloon.SaloonPasswordHash, saloon.SaloonPasswordSalt))
             {
                 //if burada girilen şifre eski şifre ile aynı mı diye kontrol ediyor
-                if (!cryptography.VerifyPasswordHash(newPassword, saloon.SaloonPasswordHash, saloon.SaloonPasswordSalt))
+                if (!cryptography.VerifyPasswordHash(updatePassword.NewPassword, saloon.SaloonPasswordHash, saloon.SaloonPasswordSalt))
                 {
                     byte[] passwordHash, passwordSalt;
-                    cryptography.CreatePasswordHash(newPassword, out passwordHash, out passwordSalt);
+                    cryptography.CreatePasswordHash(updatePassword.NewPassword, out passwordHash, out passwordSalt);
                     saloon.SaloonPasswordHash = passwordHash;
                     saloon.SaloonPasswordSalt = passwordSalt;
                     _context.Saloons.Update(saloon);
@@ -178,12 +190,12 @@ namespace MakasAPI.Data.Repositories.Concrete
             }
             return null;
         }
-        public async Task<Saloon> UpdateSaloonLocation(int id, string saloonLocation)
+        public async Task<Saloon> UpdateSaloonLocation(UpdateSaloonLocation saloonObj)
         {
-            var saloon = GetSaloonById(id);
+            var saloon = GetSaloonById(saloonObj.Id);
             if (saloon != null)
             {
-                saloon.SaloonLocation = saloonLocation;
+                saloon.SaloonLocation = saloonObj.SaloonLocation;
                 _context.Saloons.Update(saloon);
                 await _context.SaveChangesAsync();
                 return saloon;
@@ -191,15 +203,15 @@ namespace MakasAPI.Data.Repositories.Concrete
             return null;
         }
 
-        public async Task<Saloon> UpdateSaloonImage(int id, byte[] image)
+        public async Task<Saloon> UpdateSaloonImage(UpdateSaloonImageDto saloon)
         {
-            var saloon = GetSaloonById(id);
-            if (saloon != null)
+            var result = GetSaloonById(saloon.Id);
+            if (result != null)
             {
-                saloon.SaloonImage = image;
-                _context.Saloons.Update(saloon);
+                result.SaloonImage = saloon.SaloonImage;
+                _context.Saloons.Update(result);
                 await _context.SaveChangesAsync();
-                return saloon;
+                return result;
             }
             return null;
         }
@@ -221,6 +233,7 @@ namespace MakasAPI.Data.Repositories.Concrete
             }
             return null;
         }
+      
         public List<WorkerAppointmentDto> GetWorkerFutureAppointments(int workerId)
         {
             var appointments = _context.Appointments.Where(a => a.Date > DateTime.Now && a.WorkerId == workerId).Join(_context.Customers, a => a.CustomerId, c => c.Id,
@@ -243,6 +256,17 @@ namespace MakasAPI.Data.Repositories.Concrete
             if (workers.Count() != 0)
             {
                 return workers;
+
+            }
+            return null;
+        }
+
+        public List<Price> GetPricesBySaloonId(int saloonId)
+        {
+            var prices = _context.Prices.Where(p => p.SaloonId == saloonId).ToList();
+            if (prices.Count() != 0)
+            {
+                return prices;
 
             }
             return null;
