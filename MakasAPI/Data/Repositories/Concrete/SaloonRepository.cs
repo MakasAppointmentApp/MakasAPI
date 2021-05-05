@@ -42,7 +42,7 @@ namespace MakasAPI.Data.Repositories.Concrete
         public Saloon GetSaloonById(int saloonId)
         {
             //Entity Frameworkten FindAsync ya da FirstOrDefaultAsync kullanmak daha iyi olabilir mi?
-            var saloon = _context.Saloons.FirstOrDefault(s => s.Id == saloonId);
+            var saloon = _context.Saloons.Include(s=>s.Prices).Include(s=>s.Workers).Include(s=>s.Reviews).FirstOrDefault(s => s.Id == saloonId);
             if (saloon != null)
             {
                 return saloon;
