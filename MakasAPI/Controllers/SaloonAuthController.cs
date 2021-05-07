@@ -70,7 +70,7 @@ namespace MakasAPI.Controllers
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.MobilePhone, user.SaloonPhone)
+                    new Claim(ClaimTypes.Name, user.SaloonName)
                 }),
                 Expires = DateTime.Now.AddDays(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
@@ -78,7 +78,7 @@ namespace MakasAPI.Controllers
             };
             var token = tokenHandler.CreateToken(tokenDescriptor);
             var tokenString = tokenHandler.WriteToken(token);
-
+            //DTO TANIMLA ONU GÖNDER TOKEN VE USERID İÇİN
             return Ok(tokenString);
         }
         [HttpGet]
