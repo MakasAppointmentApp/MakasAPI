@@ -66,7 +66,7 @@ namespace MakasAPI.Controllers
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                    new Claim(ClaimTypes.Email, user.CustomerEmail)
+                    new Claim(ClaimTypes.Name, user.CustomerName+" "+user.CustomerSurname)
                 }),
                 Expires = DateTime.Now.AddDays(1),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
