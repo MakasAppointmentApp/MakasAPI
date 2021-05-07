@@ -1,4 +1,5 @@
 ﻿using MakasAPI.Data.Repositories.Abstract;
+using MakasAPI.Dtos.DtosForCustomers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -33,9 +34,9 @@ namespace MakasAPI.Controllers
         }
         [HttpGet]
         [Route("locationsaloons")]
-        public ActionResult GetSaloonsByLocation(string city, string district, bool gender)
+        public ActionResult GetSaloonsByLocation(ListedSaloonLocationDto saloonObj)
         {
-            var saloons = _customerRepository.GetSaloonsByLocation(city,district,gender);
+            var saloons = _customerRepository.GetSaloonsByLocation(saloonObj);
             if (saloons == null)
             {
                 return BadRequest("Bu konumda hiç salon yok!");

@@ -1,4 +1,5 @@
-﻿using MakasAPI.Dtos.DtosForSaloon;
+﻿using MakasAPI.Dtos.DtosForCustomers;
+using MakasAPI.Dtos.DtosForSaloon;
 using MakasAPI.Models;
 using System;
 using System.Collections.Generic;
@@ -11,7 +12,7 @@ namespace MakasAPI.Data.Repositories.Abstract
     {
         List<Saloon> GetSaloons();
         Saloon GetSaloonById(int saloonId);
-        List<SaloonsByLocationDto> GetSaloonsByLocation(string city, string district, bool gender);
+        List<GetSaloonsByLocationDto> GetSaloonsByLocation(ListedSaloonLocationDto salonObj);
         List<WorkersBySaloonDto> GetWorkersBySaloon(int saloonId);
         Task<Appointment> AddAppointment(int customerId, int saloonId, int workerId,DateTime dateT);
         List<AppointmentsWithSaloon> GetAppointmentsById(int customerId);

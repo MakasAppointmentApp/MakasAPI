@@ -1,4 +1,5 @@
 ﻿using MakasAPI.Data.Repositories.Abstract;
+using MakasAPI.Dtos.DtosForCustomers;
 using MakasAPI.Dtos.DtosForSaloon;
 using MakasAPI.Models;
 using Microsoft.EntityFrameworkCore;
@@ -60,11 +61,11 @@ namespace MakasAPI.Data.Repositories.Concrete
             return null;
         }
 
-        public List<SaloonsByLocationDto> GetSaloonsByLocation(string city, string district, bool gender)
+        public List<GetSaloonsByLocationDto> GetSaloonsByLocation(ListedSaloonLocationDto salonObj)
         {
             // Bu tamam sıralama için bakılabilir!?
-            var saloons = _context.Saloons.Where(s => s.SaloonCity == city && s.SaloonDistrict == district && gender == s.SaloonGender).Include( c=> c.Workers).Select(
-            s => new SaloonsByLocationDto
+            var saloons = _context.Saloons.Where(s => s.SaloonCity == salonObj.SaloonCity && s.SaloonDistrict == salonObj.SaloonDistrict && salonObj.SaloonGender == s.SaloonGender).Include(c => c.Workers).Select(
+            s => new GetSaloonsByLocationDto
             {
                 Id = s.Id,
                 SaloonName = s.SaloonName,
