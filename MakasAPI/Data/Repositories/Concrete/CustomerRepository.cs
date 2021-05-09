@@ -1,6 +1,8 @@
 ﻿using MakasAPI.Data.Repositories.Abstract;
 using MakasAPI.Dtos.DtosForCustomers;
 using MakasAPI.Dtos.DtosForSaloon;
+using MakasAPI.Dtos.DtosForUsers;
+using MakasAPI.Helpers;
 using MakasAPI.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -226,6 +228,65 @@ namespace MakasAPI.Data.Repositories.Concrete
             {
                 favorites.Reverse();  //En son eklenen başta duracak şekilde.
                 return favorites;
+            }
+            return null;
+        }
+        public async Task<Customer> UpdateCustomerName(UpdateCustomerNameDto customerObj)
+        {
+            var customer = GetCustomerById(customerObj.Id);
+            if (customer != null)
+            {
+                customer.CustomerName = customerObj.CustomerName;
+                customer.CustomerSurname = customerObj.CustomerSurName;
+                _context.Customers.Update(customer);
+                await _context.SaveChangesAsync();
+                return customer;
+            }
+            return null;
+
+        }
+        public async Task<Customer> UpdateCustomerMail(UpdateCustomerMailDto customerObj)
+        {
+            var customer = GetCustomerById(customerObj.Id);
+            var ifAny = _context.Customers.FirstOrDefault(c => c.CustomerEmail == customerObj.CustomerMail);
+            if (customer != null && ifAny==null)
+            {
+                customer.CustomerEmail = customerObj.CustomerMail;
+                _context.Customers.Update(customer);
+                await _context.SaveChangesAsync();
+                return customer;
+            }
+            return null;
+
+        }
+
+        public async Task<Customer> UpdateCustomerPassword(UpdateCustomerPasswordDto updatePassword)
+        {
+            var customer = GetCustomerById(updatePassword.Id);
+            CryptographyExtension cryptography = new CryptographyExtension();
+            if (cryptography.VerifyPasswordHash(updatePassword.OldPassword, customer.CustomerPasswordHash, customer.CustomerPasswordSalt))
+            {
+                //if burada girilen şifre eski şifre ile aynı mı diye kontrol ediyor
+                if (!cryptography.VerifyPasswordHash(updatePassword.NewPassword, customer.CustomerPasswordHash, customer.CustomerPasswordSalt))
+                {
+                    byte[] passwordHash, passwordSalt;
+                    cryptography.CreatePasswordHash(updatePassword.NewPassword, out passwordHash, out passwordSalt);
+                    customer.CustomerPasswordHash = passwordHash;
+                    customer.CustomerPasswordSalt = passwordSalt;
+                    _context.Customers.Update(customer);
+                    await _context.SaveChangesAsync();
+                    return customer;
+                }
+            }
+            return null;
+        }
+        public Customer GetCustomerById(int customerId)
+        {
+            var customer = _context.Customers.FirstOrDefault(s => s.Id == customerId);
+            if (customer != null)
+            {
+                return customer;
+
             }
             return null;
         }

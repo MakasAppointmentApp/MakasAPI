@@ -1,5 +1,6 @@
 ﻿using MakasAPI.Dtos.DtosForCustomers;
 using MakasAPI.Dtos.DtosForSaloon;
+using MakasAPI.Dtos.DtosForUsers;
 using MakasAPI.Models;
 using System;
 using System.Collections.Generic;
@@ -21,7 +22,10 @@ namespace MakasAPI.Data.Repositories.Abstract
         Task<Favorite> AddFavorite(int customerId, int saloonId);
         Task<Favorite> UnFavorite(int id);
         List<FavoriteByCustomerDto> GetFavoritesByCustomer(int customerId);
-
+        Customer GetCustomerById(int customerId);
+        Task<Customer> UpdateCustomerName(UpdateCustomerNameDto customerObj);
+        Task<Customer> UpdateCustomerPassword(UpdateCustomerPasswordDto customerUpdatePassword);
+        Task<Customer> UpdateCustomerMail(UpdateCustomerMailDto customerUpdateMail);
 
     }
 }
