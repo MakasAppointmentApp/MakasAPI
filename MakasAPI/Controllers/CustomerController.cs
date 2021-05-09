@@ -1,5 +1,6 @@
 ﻿using MakasAPI.Data.Repositories.Abstract;
 using MakasAPI.Dtos.DtosForCustomers;
+using MakasAPI.Dtos.DtosForUsers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -19,6 +20,17 @@ namespace MakasAPI.Controllers
         {
             _customerRepository = customerRepository;
             _configuration = configuration;
+        }
+        [HttpGet]
+        [Route("customerdetail")]
+        public ActionResult GetCustomerById(int id)
+        {
+            var customer = _customerRepository.GetCustomerById(id);
+            if (customer == null)
+            {
+                return BadRequest("Böyle bir müşteri yok!");
+            }
+            return Ok(customer);
         }
 
         [HttpGet]
@@ -68,6 +80,39 @@ namespace MakasAPI.Controllers
             return Ok(workers);
         }
 
+        [HttpPost]
+        [Route("updatename")]
+        public ActionResult UpdateSaloonName([FromBody] UpdateCustomerNameDto customerObject)
+        {
+            var customer = _customerRepository.UpdateCustomerName(customerObject);
+            if (customer.Result == null)
+            {
+                return BadRequest("Müşteri adı değiştirilemedi, bir hata oluştu!");
+            }
+            return Ok(200);
+        }
+        [HttpPost]
+        [Route("updatepassword")]
+        public ActionResult UpdateSaloonPassword([FromBody] UpdateCustomerPasswordDto updatePassword)
+        {
+            var saloon = _customerRepository.UpdateCustomerPassword(updatePassword);
+            if (saloon.Result == null)
+            {
+                return BadRequest("Şifre değiştirilemedi, bir hata oluştu!");
+            }
+            return Ok(200);
+        }
+        [HttpPost]
+        [Route("updatecustomermail")]
+        public ActionResult UpdateCustomerMail([FromBody] UpdateCustomerMailDto updateMail)
+        {
+            var saloon = _customerRepository.UpdateCustomerMail(updateMail);
+            if (saloon.Result == null)
+            {
+                return BadRequest("Mail değiştirilemedi, bir hata oluştu!");
+            }
+            return Ok(200);
+        }
         [HttpPost]
         [Route("addappointment")]
         public ActionResult AddAppointment(int customerId, int saloonId, int workerId, DateTime dateT)
