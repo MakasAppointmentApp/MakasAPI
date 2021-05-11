@@ -219,6 +219,7 @@ namespace MakasAPI.Data.Repositories.Concrete
                 (f, s) => new FavoriteByCustomerDto
                 {
                     Id = f.Id,
+                    SaloonId = s.Id,
                     SaloonName = s.SaloonName,
                     SaloonImage = s.SaloonImage,
                     SaloonRate = s.SaloonRate
