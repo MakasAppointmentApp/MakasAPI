@@ -69,6 +69,20 @@ namespace MakasAPI.Controllers
         }
 
         [HttpGet]
+        [Route("isfavorite")]
+        public ActionResult IsFavoriteByCustomer(int saloonId, int customerId)
+        {
+            var favorite = _customerRepository.IsFavoriteByCustomer(saloonId, customerId);
+            bool isF = false;
+            if (favorite != null)
+            {
+                isF = true;
+            }
+
+            return Ok(isF);
+        }
+
+        [HttpGet]
         [Route("workersinsaloon")]
         public ActionResult GetWorkersBySaloon(int saloonId)
         {
