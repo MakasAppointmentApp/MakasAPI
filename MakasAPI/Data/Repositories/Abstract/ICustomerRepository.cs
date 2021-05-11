@@ -13,6 +13,7 @@ namespace MakasAPI.Data.Repositories.Abstract
     {
         List<Saloon> GetSaloons();
         Saloon GetSaloonById(int saloonId);
+        Favorite IsFavoriteByCustomer(int saloonId, int customerId);
         List<GetSaloonsByLocationDto> GetSaloonsByLocation(ListedSaloonLocationDto salonObj);
         List<WorkersBySaloonDto> GetWorkersBySaloon(int saloonId);
         Task<Appointment> AddAppointment(int customerId, int saloonId, int workerId,DateTime dateT);

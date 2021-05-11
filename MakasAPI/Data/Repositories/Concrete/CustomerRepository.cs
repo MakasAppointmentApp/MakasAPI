@@ -61,6 +61,16 @@ namespace MakasAPI.Data.Repositories.Concrete
             }
             return null;
         }
+        public Favorite IsFavoriteByCustomer(int saloonId,int customerId)
+        {
+            var favorite = _context.Favorites.FirstOrDefault(f => f.SaloonId == saloonId && f.CustomerId == customerId);
+            if (favorite != null)
+            {
+                return favorite;
+
+            }
+            return null;
+        }
 
         public List<GetSaloonsByLocationDto> GetSaloonsByLocation(ListedSaloonLocationDto salonObj)
         {
