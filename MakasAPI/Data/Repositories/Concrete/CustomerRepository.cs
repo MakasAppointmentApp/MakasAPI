@@ -61,7 +61,7 @@ namespace MakasAPI.Data.Repositories.Concrete
             }
             return null;
         }
-        public Favorite IsFavoriteByCustomer(int saloonId,int customerId)
+        public Favorite IsFavoriteByCustomer(int saloonId, int customerId)
         {
             var favorite = _context.Favorites.FirstOrDefault(f => f.SaloonId == saloonId && f.CustomerId == customerId);
             if (favorite != null)
@@ -152,7 +152,7 @@ namespace MakasAPI.Data.Repositories.Concrete
             }
             return null;
         }
-   
+
         public async Task<Review> AddReview(int customerId, int saloonId, int workerId, int appointmentId, double rate, string comment)
         {
             if (rate != 0 && comment != null)
@@ -174,41 +174,26 @@ namespace MakasAPI.Data.Repositories.Concrete
             }
             return null;
         }
-       
+
         public List<ReviewsBySaloon> GetReviewsBySaloon(int saloonId)
         {
             // BU DA TAMAM ANCAK YORUMUN YAZILDIĞI DATE İ DATETIME NOW DAN ÇIKARIP INT OLARAKTA TUTULABİLİR
-              var reviews = _context.Reviews.Where(s => s.SaloonId == saloonId).Join(_context.Customers, r => r.CustomerId, c => c.Id,
-                (r, c) => new ReviewsBySaloon
-                {
-                    Id = r.Id,
-                    Comment = r.Comment,
-                    Rate = r.Rate,
-                    Date = r.Date,
-                    CustomerName = c.CustomerName + " " + c.CustomerSurname
-                }
-                ).ToList();
+            var reviews = _context.Reviews.Where(s => s.SaloonId == saloonId).Join(_context.Customers, r => r.CustomerId, c => c.Id,
+              (r, c) => new ReviewsBySaloon
+              {
+                  Id = r.Id,
+                  Comment = r.Comment,
+                  Rate = r.Rate,
+                  Date = r.Date,
+                  CustomerName = c.CustomerName + " " + c.CustomerSurname
+              }
+              ).ToList();
             if (reviews != null)
             {
                 reviews.Reverse();
                 return reviews;
             }
             return null;
-        }
-
-        public async Task<Favorite> AddFavorite(int customerId, int saloonId)
-        {
-
-            var favoriteToCreate = new Favorite
-            {
-                CustomerId = customerId,
-                SaloonId = saloonId
-
-            };
-            _context.Add(favoriteToCreate);
-            await _context.SaveChangesAsync();
-            return favoriteToCreate;
-
         }
 
         public async Task<Favorite> UnFavorite(int id)
@@ -259,7 +244,7 @@ namespace MakasAPI.Data.Repositories.Concrete
         {
             var customer = GetCustomerById(customerObj.Id);
             var ifAny = _context.Customers.FirstOrDefault(c => c.CustomerEmail == customerObj.CustomerMail);
-            if (customer != null && ifAny==null)
+            if (customer != null && ifAny == null)
             {
                 customer.CustomerEmail = customerObj.CustomerMail;
                 _context.Customers.Update(customer);
@@ -297,6 +282,45 @@ namespace MakasAPI.Data.Repositories.Concrete
             {
                 return customer;
 
+            }
+            return null;
+        }
+
+        public async Task<Favorite> AddFavorite(AddFavoriteDto favorite)
+        {
+
+            var favToCreate = new Favorite
+            {
+                SaloonId = favorite.SaloonId,
+                CustomerId = favorite.CustomerId
+
+            };
+            _context.Add(favToCreate);
+            await _context.SaveChangesAsync();
+            return favToCreate;
+
+        }
+
+        public Favorite GetFavoriteById(int customerId,int saloonId)
+        {
+            var favorite = _context.Favorites.FirstOrDefault(f => f.CustomerId == customerId && f.SaloonId == saloonId);
+            if (favorite != null)
+            {
+                return favorite;
+
+            }
+            return null;
+        }
+
+        public async Task<Favorite> UnFavoriteV2(int customerId, int SaloonId)
+        {
+            var favorite = GetFavoriteById(customerId,SaloonId);
+            if (favorite != null)
+            {
+
+                _context.Favorites.Remove(favorite);
+                await _context.SaveChangesAsync();
+                return favorite;
             }
             return null;
         }

@@ -20,13 +20,13 @@ namespace MakasAPI.Data.Repositories.Abstract
         List<AppointmentsWithSaloon> GetAppointmentsById(int customerId);
         Task<Review> AddReview(int customerId, int saloonId, int workerId, int appointmentId, double rate, string comment);
         List<ReviewsBySaloon> GetReviewsBySaloon(int saloonId);
-        Task<Favorite> AddFavorite(int customerId, int saloonId);
+        Task<Favorite> AddFavorite(AddFavoriteDto favorite);
         Task<Favorite> UnFavorite(int id);
+        Task<Favorite> UnFavoriteV2(int customerId, int SaloonId);
         List<FavoriteByCustomerDto> GetFavoritesByCustomer(int customerId);
         Customer GetCustomerById(int customerId);
         Task<Customer> UpdateCustomerName(UpdateCustomerNameDto customerObj);
         Task<Customer> UpdateCustomerPassword(UpdateCustomerPasswordDto customerUpdatePassword);
         Task<Customer> UpdateCustomerMail(UpdateCustomerMailDto customerUpdateMail);
-
     }
 }

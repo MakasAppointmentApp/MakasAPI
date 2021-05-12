@@ -173,10 +173,10 @@ namespace MakasAPI.Controllers
         }
         [HttpPost]
         [Route("addfavorite")]
-        public ActionResult AddFavorite(int customerId, int saloonId)
+        public ActionResult AddFavorite([FromBody] AddFavoriteDto favorite)
         {
-            var favorite = _customerRepository.AddFavorite(customerId, saloonId);
-            if (favorite.Result == null)
+            var fav = _customerRepository.AddFavorite(favorite);
+            if (fav.Result == null)
             {
                 return BadRequest("Favorilere eklenemedi, bir hata oluştu!");
             }
@@ -187,6 +187,17 @@ namespace MakasAPI.Controllers
         public ActionResult UnFavorite(int id)
         {
             var favorite = _customerRepository.UnFavorite(id);
+            if (favorite.Result == null)
+            {
+                return BadRequest("Favorilerden çıkarılamadı, bir hata oluştu!");
+            }
+            return Ok(200);
+        }
+        [HttpDelete]
+        [Route("unfavoritev2")]
+        public ActionResult UnFavoriteV2(int customerId, int SaloonId)
+        {
+            var favorite = _customerRepository.UnFavoriteV2(customerId,SaloonId);
             if (favorite.Result == null)
             {
                 return BadRequest("Favorilerden çıkarılamadı, bir hata oluştu!");
