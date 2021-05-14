@@ -16,7 +16,7 @@ namespace MakasAPI.Data.Repositories.Abstract
         Favorite IsFavoriteByCustomer(int saloonId, int customerId);
         List<GetSaloonsByLocationDto> GetSaloonsByLocation(ListedSaloonLocationDto salonObj);
         List<WorkersBySaloonDto> GetWorkersBySaloon(int saloonId);
-        Task<Appointment> AddAppointment(int customerId, int saloonId, int workerId,DateTime dateT);
+        Task<Appointment> AddAppointment(AddAppointmentDto app);
         List<AppointmentsWithSaloon> GetAppointmentsById(int customerId);
         Task<Review> AddReview(int customerId, int saloonId, int workerId, int appointmentId, double rate, string comment);
         List<ReviewsBySaloon> GetReviewsBySaloon(int saloonId);
@@ -28,5 +28,6 @@ namespace MakasAPI.Data.Repositories.Abstract
         Task<Customer> UpdateCustomerName(UpdateCustomerNameDto customerObj);
         Task<Customer> UpdateCustomerPassword(UpdateCustomerPasswordDto customerUpdatePassword);
         Task<Customer> UpdateCustomerMail(UpdateCustomerMailDto customerUpdateMail);
+        List<HourDto> GetAvailableHoursByDate(int workerId, DateTime date);
     }
 }

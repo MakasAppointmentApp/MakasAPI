@@ -129,9 +129,9 @@ namespace MakasAPI.Controllers
         }
         [HttpPost]
         [Route("addappointment")]
-        public ActionResult AddAppointment(int customerId, int saloonId, int workerId, DateTime dateT)
+        public ActionResult AddAppointment([FromBody] AddAppointmentDto app)
         {
-            var appointment = _customerRepository.AddAppointment(customerId, saloonId, workerId, dateT);
+            var appointment = _customerRepository.AddAppointment(app);
             if (appointment.Result == null)
             {
                 return BadRequest("Randevu alınamadı, bir hata oluştu!");
@@ -214,6 +214,17 @@ namespace MakasAPI.Controllers
                 return BadRequest("Müşterinin hiç favorisi yok!");
             }
             return Ok(favorites);
+        }
+        [HttpGet]
+        [Route("availablehours")]
+        public ActionResult GetAvailableHoursByDate(int workerId, DateTime date)
+        {
+            var result = _customerRepository.GetAvailableHoursByDate(workerId, date);
+            if (result.Count() == 0)
+            {
+                return BadRequest("Hiç uygun saat yok");
+            }
+            return Ok(result);
         }
     }
 }
