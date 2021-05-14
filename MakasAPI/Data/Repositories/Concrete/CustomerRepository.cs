@@ -114,21 +114,37 @@ namespace MakasAPI.Data.Repositories.Concrete
             return null;
         }
 
-        public async Task<Appointment> AddAppointment(int customerId, int saloonId, int workerId, DateTime dateT)
+        public async Task<Appointment> AddAppointment(AddAppointmentDto app)
         {
-            if (customerId != 0 && saloonId != 0 && workerId != 0)
+            //Eğer bir hata olur ve başkası tarafından alınmış bir saate randevu alınmaya çalışılırsa kontrolü
+            var notAvailableApp = _context.Appointments
+                .FirstOrDefault(a => a.Date == app.Date && a.WorkerId == app.WorkerId);
+            //Günde 1 customer sadece 1 tane randevu alsın diye bunu usera göstermeliyiz
+            var userApp = _context.Appointments.FirstOrDefault
+                (a => a.CustomerId == app.CustomerId && a.Date.Day == app.Date.Day &&
+                 a.Date.Month == app.Date.Month && app.Date.Year == app.Date.Year);
+            if (userApp == null)
             {
-                var appointmentToCreate = new Appointment
-                {
-                    CustomerId = customerId,
-                    SaloonId = saloonId,
-                    WorkerId = workerId,
-                    Date = dateT
 
-                };
-                _context.Add(appointmentToCreate);
-                await _context.SaveChangesAsync();
-                return appointmentToCreate;
+                if (notAvailableApp == null)
+                {
+                    if (app.CustomerId != 0 && app.SaloonId != 0 && app.WorkerId != 0)
+                    {
+                        var appointmentToCreate = new Appointment
+                        {
+                            CustomerId = app.CustomerId,
+                            SaloonId = app.SaloonId,
+                            WorkerId = app.WorkerId,
+                            Date = app.Date
+
+                        };
+                        _context.Add(appointmentToCreate);
+                        await _context.SaveChangesAsync();
+                        return appointmentToCreate;
+                    }
+                    return null;
+                }
+                return null;
             }
             return null;
         }
@@ -301,7 +317,7 @@ namespace MakasAPI.Data.Repositories.Concrete
 
         }
 
-        public Favorite GetFavoriteById(int customerId,int saloonId)
+        public Favorite GetFavoriteById(int customerId, int saloonId)
         {
             var favorite = _context.Favorites.FirstOrDefault(f => f.CustomerId == customerId && f.SaloonId == saloonId);
             if (favorite != null)
@@ -314,7 +330,7 @@ namespace MakasAPI.Data.Repositories.Concrete
 
         public async Task<Favorite> UnFavoriteV2(int customerId, int SaloonId)
         {
-            var favorite = GetFavoriteById(customerId,SaloonId);
+            var favorite = GetFavoriteById(customerId, SaloonId);
             if (favorite != null)
             {
 
@@ -323,6 +339,33 @@ namespace MakasAPI.Data.Repositories.Concrete
                 return favorite;
             }
             return null;
+        }
+        public List<HourDto> GetAvailableHoursByDate(int workerId, DateTime date)
+        {
+            int startedHour = 8;
+            List<HourDto> availableHoursList = new List<HourDto>();
+            var appointments = _context.Appointments.Where(a => a.WorkerId == workerId && a.Date.Date == date).ToList();
+            List<int> notAvailableHoursList = new List<int>();
+            foreach (var item in appointments)
+            {
+                if (!notAvailableHoursList.Contains(item.Date.TimeOfDay.Hours))
+                {
+                    notAvailableHoursList.Add(item.Date.TimeOfDay.Hours);
+                }
+            }
+            if (date.Date == DateTime.Now.Date)
+            {
+                startedHour = DateTime.Now.TimeOfDay.Hours + 1;
+            }
+            for (int i = startedHour; i < 22; i++)
+            {
+
+                if (!notAvailableHoursList.Contains(i))
+                {
+                    availableHoursList.Add(new HourDto { Hour = i.ToString() });
+                }
+            }
+            return availableHoursList;
         }
     }
 }
