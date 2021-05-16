@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace MakasAPI.Dtos.DtosForSaloon
 {
-    public class AppointmentsWithSaloon
+    public class AppointmentsWithSaloonDto
     {
         public int Id { get; set; }
         public int SaloonId { get; set; }
@@ -13,7 +13,7 @@ namespace MakasAPI.Dtos.DtosForSaloon
         public int WorkerId { get; set; }
         public int AppointmentId { get; set; }
         public string SaloonName { get; set; }
-        public string reviewControl { get; set; }
+        public string ReviewControl { get; set; }
         public string WorkerName { get; set; }
         public string ifExists { get; set; }
         public DateTime Date { get; set; }

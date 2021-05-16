@@ -150,12 +150,12 @@ namespace MakasAPI.Data.Repositories.Concrete
             return null;
         }
 
-        public List<AppointmentsWithSaloon> GetAppointmentsById(int customerId)
+        public List<AppointmentsWithSaloonDto> GetAppointmentsById(int customerId)
         {
             //exists kontrolü eklenecek LİSTE İÇİNE EXİSTS KONTROLÜ YAPMA ÇÖZÜMÜ BULAMADIM 
             var appointments = _context.Appointments.Where(s => s.CustomerId == customerId).Join(_context.Saloons, a => a.SaloonId, s => s.Id,
 
-                (a, s) => new AppointmentsWithSaloon
+                (a, s) => new AppointmentsWithSaloonDto
                 {
                     Id = a.Id,
                     SaloonName = s.SaloonName,
@@ -165,7 +165,7 @@ namespace MakasAPI.Data.Repositories.Concrete
                     AppointmentId = a.Id,
                     SaloonId = a.SaloonId,
                     WorkerId = a.WorkerId,
-                    reviewControl ="",
+                    ReviewControl = "",
                     CustomerId = a.CustomerId
                 }).ToList();
 
@@ -177,24 +177,21 @@ namespace MakasAPI.Data.Repositories.Concrete
             return null;
         }
 
-        public async Task<Review> AddReview(int customerId, int saloonId, int workerId, int appointmentId, double rate, string comment)
+        public async Task<Review> AddReview(Review review)
         {
-            if (rate != 0 && comment != null)
+            if (review.Rate != 0 && review.Comment != null)
             {
-                var reviewToCreate = new Review
-                {
-                    CustomerId = customerId,
-                    SaloonId = saloonId,
-                    WorkerId = workerId,
-                    AppointmentId = appointmentId,
-                    Rate = rate,
-                    Comment = comment,
-                    Date = DateTime.Now
-
-                };
-                _context.Add(reviewToCreate);
+                int workerAppoitmentsCount=_context.Reviews.Count(r => r.WorkerId == review.WorkerId);
+                var worker = _context.Workers.FirstOrDefault(w => w.Id == review.WorkerId);
+                double newWorkerPoint= ((worker.WorkerRate * workerAppoitmentsCount) + review.Rate) / (workerAppoitmentsCount+1);
+                worker.WorkerRate = newWorkerPoint;
+                int saloonAppointmentsCount = _context.Reviews.Count(r => r.SaloonId == review.SaloonId);
+                var saloon = _context.Saloons.FirstOrDefault(s => s.Id == review.SaloonId);
+                double newSaloonPoint = ((saloon.SaloonRate * saloonAppointmentsCount) + review.Rate) / (saloonAppointmentsCount+1);
+                saloon.SaloonRate = newSaloonPoint;
+                _context.Add(review);
                 await _context.SaveChangesAsync();
-                return reviewToCreate;
+                return review;
             }
             return null;
         }
@@ -214,7 +211,7 @@ namespace MakasAPI.Data.Repositories.Concrete
               ).ToList();
             if (reviews != null)
             {
-                reviews.Reverse();
+                
                 return reviews;
             }
             return null;
@@ -404,6 +401,15 @@ namespace MakasAPI.Data.Repositories.Concrete
             }
             return null;
 
+        }
+        public Review GetReviewByAppointmentId(int Id)
+        {
+            var review = _context.Reviews.FirstOrDefault(r => r.AppointmentId == Id);
+            if (review != null)
+            {
+                return review;
+            }
+            return null;
         }
     }
 }
