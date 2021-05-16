@@ -226,5 +226,22 @@ namespace MakasAPI.Controllers
             }
             return Ok(result);
         }
+
+        [HttpGet]
+        [Route("getexistsreviews")]
+        public ActionResult GetReviewIfExists(int saloonId, int customerId, int workerId, int appointmentId)
+        {
+            var review = _customerRepository.GetReviewIfExists(saloonId, customerId, workerId, appointmentId);
+            /*reviewBool review2 = new reviewBool
+            {
+                ifExists = true
+            };*/
+            if (review == null)
+            {
+                //review2.ifExists = false;
+                return BadRequest("");
+            }
+            return Ok(review);
+        }
     }
 }

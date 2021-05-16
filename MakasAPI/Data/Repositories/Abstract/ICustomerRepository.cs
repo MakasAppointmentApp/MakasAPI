@@ -20,6 +20,7 @@ namespace MakasAPI.Data.Repositories.Abstract
         List<AppointmentsWithSaloon> GetAppointmentsById(int customerId);
         Task<Review> AddReview(int customerId, int saloonId, int workerId, int appointmentId, double rate, string comment);
         List<ReviewsBySaloon> GetReviewsBySaloon(int saloonId);
+        ReviewDto GetReviewIfExists(int saloonId, int customerId,int workerId,int appointmentId);
         Task<Favorite> AddFavorite(AddFavoriteDto favorite);
         Task<Favorite> UnFavorite(int id);
         Task<Favorite> UnFavoriteV2(int customerId, int SaloonId);
