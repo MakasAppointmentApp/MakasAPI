@@ -85,6 +85,7 @@ namespace MakasAPI.Data.Repositories.Concrete
                 WorkerCount = s.Workers.Count()
             }
             ).ToList();
+            
             if (saloons != null)
             {
                 saloons.OrderBy(s => s.SaloonRate);
@@ -151,7 +152,7 @@ namespace MakasAPI.Data.Repositories.Concrete
 
         public List<AppointmentsWithSaloon> GetAppointmentsById(int customerId)
         {
-            //BU DA TAMAM!
+            //exists kontrolü eklenecek LİSTE İÇİNE EXİSTS KONTROLÜ YAPMA ÇÖZÜMÜ BULAMADIM 
             var appointments = _context.Appointments.Where(s => s.CustomerId == customerId).Join(_context.Saloons, a => a.SaloonId, s => s.Id,
 
                 (a, s) => new AppointmentsWithSaloon
@@ -159,8 +160,15 @@ namespace MakasAPI.Data.Repositories.Concrete
                     Id = a.Id,
                     SaloonName = s.SaloonName,
                     SaloonRate = s.SaloonRate,
-                    Date = a.Date
+                    WorkerName = a.Worker.WorkerName,
+                    Date = a.Date,
+                    AppointmentId = a.Id,
+                    SaloonId = a.SaloonId,
+                    WorkerId = a.WorkerId,
+                    reviewControl ="",
+                    CustomerId = a.CustomerId
                 }).ToList();
+
             if (appointments != null)
             {
                 appointments.Sort((x, y) => y.Date.CompareTo(x.Date));  //tarihi tersten sıralama fonksiyonu.
@@ -366,6 +374,36 @@ namespace MakasAPI.Data.Repositories.Concrete
                 }
             }
             return availableHoursList;
+        }
+        public Favorite GetReviewById(int customerId, int saloonId)
+        {
+            var favorite = _context.Favorites.FirstOrDefault(f => f.CustomerId == customerId && f.SaloonId == saloonId);
+            if (favorite != null)
+            {
+                return favorite;
+
+            }
+            return null;
+        }
+        public ReviewDto GetReviewIfExists(int saloonId, int customerId, int workerId, int appointmentId)
+        {
+            var review = _context.Reviews.FirstOrDefault(r => r.AppointmentId == appointmentId && r.CustomerId == customerId && r.SaloonId == saloonId && r.WorkerId == workerId);
+
+
+            if (review != null)
+            {
+                ReviewDto review2 = new ReviewDto
+                {
+                    CustomerId = customerId,
+                    SaloonId = saloonId,
+                    WorkerId = workerId,
+                    AppointmentId = appointmentId
+                };
+
+                return review2;
+            }
+            return null;
+
         }
     }
 }
