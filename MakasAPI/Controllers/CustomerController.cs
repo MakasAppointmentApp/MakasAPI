@@ -1,6 +1,7 @@
 ﻿using MakasAPI.Data.Repositories.Abstract;
 using MakasAPI.Dtos.DtosForCustomers;
 using MakasAPI.Dtos.DtosForUsers;
+using MakasAPI.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -151,10 +152,10 @@ namespace MakasAPI.Controllers
         }
         [HttpPost]
         [Route("addreview")]
-        public ActionResult AddReview(int customerId, int saloonId, int workerId, int appointmentId, double rate, string comment)
+        public ActionResult AddReview([FromBody]Review review)
         {
-            var review = _customerRepository.AddReview(customerId, saloonId, workerId, appointmentId, rate, comment);
-            if (review.Result == null)
+            var response = _customerRepository.AddReview(review);
+            if (response.Result == null)
             {
                 return BadRequest("Değerlendirme yapılamadı, bir hata oluştu!");
             }
@@ -232,14 +233,20 @@ namespace MakasAPI.Controllers
         public ActionResult GetReviewIfExists(int saloonId, int customerId, int workerId, int appointmentId)
         {
             var review = _customerRepository.GetReviewIfExists(saloonId, customerId, workerId, appointmentId);
-            /*reviewBool review2 = new reviewBool
-            {
-                ifExists = true
-            };*/
             if (review == null)
             {
-                //review2.ifExists = false;
                 return BadRequest("");
+            }
+            return Ok(review);
+        }
+        [HttpGet]
+        [Route("specialreview")]
+        public ActionResult GetReviewByAppointmentId(int Id)
+        {
+            var review = _customerRepository.GetReviewByAppointmentId(Id);
+            if (review == null)
+            {
+                return BadRequest("Değerlendirme bulunamadı");
             }
             return Ok(review);
         }
