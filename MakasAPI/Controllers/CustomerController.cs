@@ -250,5 +250,17 @@ namespace MakasAPI.Controllers
             }
             return Ok(review);
         }
+
+        [HttpDelete]
+        [Route("cancelappointment")]
+        public ActionResult cancelAppointment(int appointmentId)
+        {
+            var appointment = _customerRepository.cancelAppointment(appointmentId);
+            if (appointment.Result == null)
+            {
+                return BadRequest("Randevu iptal edilemedi, bir hata oluştu!");
+            }
+            return Ok(200);
+        }
     }
 }

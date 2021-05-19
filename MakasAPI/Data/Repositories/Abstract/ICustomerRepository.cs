@@ -25,6 +25,7 @@ namespace MakasAPI.Data.Repositories.Abstract
         Task<Favorite> UnFavorite(int id);
         Task<Favorite> UnFavoriteV2(int customerId, int SaloonId);
         List<FavoriteByCustomerDto> GetFavoritesByCustomer(int customerId);
+        Task<Appointment> cancelAppointment(int appointmentId);
         Customer GetCustomerById(int customerId);
         Task<Customer> UpdateCustomerName(UpdateCustomerNameDto customerObj);
         Task<Customer> UpdateCustomerPassword(UpdateCustomerPasswordDto customerUpdatePassword);
