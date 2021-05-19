@@ -411,5 +411,26 @@ namespace MakasAPI.Data.Repositories.Concrete
             }
             return null;
         }
+        public List<Review> GetAppointmentReviews(int appId)
+        {
+            var reviews = _context.Reviews.Where(r => r.AppointmentId == appId).ToList();
+            return reviews;
+        }
+        public async Task<Appointment> cancelAppointment(int appointmentId)
+        {
+            var appointment = _context.Appointments.FirstOrDefault(a => a.Id == appointmentId);
+            var workerReviews = GetAppointmentReviews(appointmentId);
+            foreach (var review in workerReviews)
+            {
+                _context.Reviews.Remove(review);
+            }
+            if (appointment != null)
+            {
+                _context.Appointments.Remove(appointment);
+                await _context.SaveChangesAsync();
+                return appointment;
+            }
+            return null;
+        }
     }
 }
