@@ -223,6 +223,7 @@ namespace MakasAPI.Data.Repositories.Concrete
                 {
                     Id = a.Id,
                     Date = a.Date,
+                    
                     CustomerFullName = c.CustomerName +" "+ c.CustomerSurname 
                 }).ToList();
             if (appointments.Count != 0)

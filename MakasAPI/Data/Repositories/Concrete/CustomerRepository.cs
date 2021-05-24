@@ -85,7 +85,7 @@ namespace MakasAPI.Data.Repositories.Concrete
                 WorkerCount = s.Workers.Count()
             }
             ).ToList();
-            
+
             if (saloons != null)
             {
                 saloons.OrderBy(s => s.SaloonRate);
@@ -181,13 +181,13 @@ namespace MakasAPI.Data.Repositories.Concrete
         {
             if (review.Rate != 0 && review.Comment != null)
             {
-                int workerAppoitmentsCount=_context.Reviews.Count(r => r.WorkerId == review.WorkerId);
+                int workerAppoitmentsCount = _context.Reviews.Count(r => r.WorkerId == review.WorkerId);
                 var worker = _context.Workers.FirstOrDefault(w => w.Id == review.WorkerId);
-                double newWorkerPoint= ((worker.WorkerRate * workerAppoitmentsCount) + review.Rate) / (workerAppoitmentsCount+1);
+                double newWorkerPoint = ((worker.WorkerRate * workerAppoitmentsCount) + review.Rate) / (workerAppoitmentsCount + 1);
                 worker.WorkerRate = newWorkerPoint;
                 int saloonAppointmentsCount = _context.Reviews.Count(r => r.SaloonId == review.SaloonId);
                 var saloon = _context.Saloons.FirstOrDefault(s => s.Id == review.SaloonId);
-                double newSaloonPoint = ((saloon.SaloonRate * saloonAppointmentsCount) + review.Rate) / (saloonAppointmentsCount+1);
+                double newSaloonPoint = ((saloon.SaloonRate * saloonAppointmentsCount) + review.Rate) / (saloonAppointmentsCount + 1);
                 saloon.SaloonRate = newSaloonPoint;
                 _context.Add(review);
                 await _context.SaveChangesAsync();
@@ -211,7 +211,7 @@ namespace MakasAPI.Data.Repositories.Concrete
               ).ToList();
             if (reviews != null)
             {
-                
+
                 return reviews;
             }
             return null;
@@ -360,7 +360,11 @@ namespace MakasAPI.Data.Repositories.Concrete
             }
             if (date.Date == DateTime.Now.Date)
             {
-                startedHour = DateTime.Now.TimeOfDay.Hours + 1;
+                var hourNow = DateTime.Now.TimeOfDay.Hours;
+                if (21 > hourNow && hourNow > 8)
+                {
+                    startedHour = hourNow + 1;
+                }
             }
             for (int i = startedHour; i < 22; i++)
             {

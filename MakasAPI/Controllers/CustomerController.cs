@@ -262,5 +262,11 @@ namespace MakasAPI.Controllers
             }
             return Ok(200);
         }
+        [HttpGet]
+        [Route("gettime")]
+        public ActionResult GetTimeNow()
+        {
+            return Ok(DateTime.Now);
+        }
     }
 }
